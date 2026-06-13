@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知源 - 检索测试</title>
+<style>
+/* ========== Design Tokens ========== */
+:root {
+  --seed-primary: #3b5ccc;
+  --seed-accent: #5b6ef5;
+  --seed-bg: #f5f7fa;
+  --seed-bg2: #edf0f5;
+  --seed-fg: #1a1f36;
+  --seed-fg2: #3d4f65;
+  --seed-surface: #fff;
+  --seed-surface-hover: #f0f3f8;
+  --seed-radius: 8;
+  --seed-success: #22a06b;
+  --seed-warn: #e68a00;
+  --seed-danger: #e34850;
+  --seed-muted: #6b7a90;
+  --seed-fg-subtle: #9aa5b4;
+  --seed-border: #e2e8f0;
+  --seed-primary-light: #e8eeff;
+  --seed-primary-hover: #2d4db8;
+  --seed-success-light: #e6f7ef;
+  --seed-warn-light: #fff7e6;
+  --seed-danger-light: #fce8ea;
+  --seed-fg-on-color: #fff;
+  --seed-active-bg: #e8edf5;
+  --seed-dark-bg: #0e1117;
+  --seed-dark-bg2: #151921;
+  --seed-dark-surface: #1a1f2b;
+  --seed-dark-surface-hover: #222838;
+  --seed-dark-surface-raised: #212735;
+  --seed-dark-fg: #e8ecf2;
+  --seed-dark-fg2: #a8b4c4;
+  --seed-dark-fg-subtle: #4a5568;
+  --seed-dark-primary: #5b7fff;
+  --seed-dark-primary-hover: #7b99ff;
+  --seed-dark-accent: #7c8fff;
+  --seed-dark-success: #36b37e;
+  --seed-dark-warn: #f0a830;
+  --seed-dark-danger: #f06070;
+}
+[data-theme="light"] {
+  --bg: var(--seed-bg);
+  --bg2: var(--seed-bg2);
+  --surface: var(--seed-surface);
+  --surface-hover: var(--seed-surface-hover);
+  --surface-raised: var(--seed-surface);
+  --fg: var(--seed-fg);
+  --fg2: var(--seed-fg2);
+  --fg-muted: var(--seed-muted);
+  --fg-subtle: var(--seed-fg-subtle);
+  --border: var(--seed-border);
+  --border-subtle: var(--seed-bg2);
+  --primary: var(--seed-primary);
+  --primary-light: var(--seed-primary-light);
+  --primary-hover: var(--seed-primary-hover);
+  --accent: var(--seed-accent);
+  --success: var(--seed-success);
+  --success-light: var(--seed-success-light);
+  --warn: var(--seed-warn);
+  --warn-light: var(--seed-warn-light);
+  --danger: var(--seed-danger);
+  --danger-light: var(--seed-danger-light);
+  --fg-on-color: var(--seed-fg-on-color);
+  --border-light: var(--seed-bg2);
+  --surface-active: var(--seed-active-bg);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+[data-theme="dark"] {
+  --bg: var(--seed-dark-bg);
+  --bg2: var(--seed-dark-bg2);
+  --surface: var(--seed-dark-surface);
+  --surface-hover: var(--seed-dark-surface-hover);
+  --surface-raised: var(--seed-dark-surface-raised);
+  --fg: var(--seed-dark-fg);
+  --fg2: var(--seed-dark-fg2);
+  --fg-muted: var(--seed-muted);
+  --fg-subtle: var(--seed-dark-fg-subtle);
+  --border: rgba(255,255,255,0.08);
+  --border-subtle: rgba(255,255,255,0.05);
+  --primary: var(--seed-dark-primary);
+  --primary-light: rgba(91,127,255,0.12);
+  --primary-hover: var(--seed-dark-primary-hover);
+  --accent: var(--seed-dark-accent);
+  --success: var(--seed-dark-success);
+  --success-light: rgba(54,179,126,0.12);
+  --warn: var(--seed-dark-warn);
+  --warn-light: rgba(240,168,48,0.12);
+  --danger: var(--seed-dark-danger);
+  --danger-light: rgba(240,96,112,0.12);
+  --fg-on-color: var(--seed-fg-on-color);
+  --border-light: var(--seed-dark-surface-hover);
+  --surface-active: var(--seed-dark-surface-hover);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background 0.25s, color 0.25s;
+}
+
+/* ========== Top Navigation ========== */
+[data-component="topnav"] {
+  display: flex; align-items: center; height: 56px;
+  padding: 0 24px; background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 100;
+}
+.topnav-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 18px; font-weight: 700; color: var(--primary);
+  letter-spacing: 0.5px; flex-shrink: 0;
+}
+.topnav-brand svg { width: 28px; height: 28px; }
+.topnav-search {
+  flex: 1; max-width: 420px; margin: 0 auto; position: relative;
+}
+.topnav-search input {
+  width: 100%; height: 36px; padding: 0 14px 0 38px;
+  border: 1px solid var(--border); border-radius: 18px;
+  background: var(--bg); color: var(--fg); font-size: 14px;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.topnav-search input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+.topnav-search svg {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; color: var(--fg-muted);
+}
+.topnav-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.theme-toggle {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--fg-muted); transition: all 0.2s;
+}
+.theme-toggle:hover { background: var(--surface-hover); color: var(--fg); }
+.user-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: var(--fg-on-color); display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+}
+
+/* ========== Main Layout ========== */
+[data-component="main-layout"] {
+  display: flex; height: calc(100vh - 56px); overflow: hidden;
+}
+
+/* ========== Left Config Panel ========== */
+[data-component="config-panel"] {
+  width: 320px; flex-shrink: 0; background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto; padding: 20px;
+}
+.config-header { margin-bottom: 20px; }
+.config-header h1 {
+  font-size: 20px; font-weight: 700; color: var(--fg); margin-bottom: 4px;
+}
+.config-header .kb-name {
+  font-size: 13px; color: var(--fg-muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.config-section { margin-bottom: 18px; }
+.config-label {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; font-weight: 600; color: var(--fg2);
+  margin-bottom: 8px;
+}
+.config-label .badge {
+  font-size: 11px; padding: 1px 8px; border-radius: 10px;
+  background: var(--primary-light); color: var(--primary); font-weight: 500;
+}
+
+/* Select / Dropdown */
+.config-select {
+  width: 100%; height: 38px; padding: 0 32px 0 12px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg); color: var(--fg); font-size: 14px;
+  appearance: none; cursor: pointer; outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7a90' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+  transition: border-color 0.2s;
+}
+.config-select:focus { border-color: var(--primary); }
+
+/* Segmented Control */
+.segmented-control {
+  display: flex; background: var(--bg); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 3px; gap: 2px;
+}
+.segmented-control button {
+  flex: 1; height: 32px; border: none; border-radius: 6px;
+  background: transparent; color: var(--fg-muted); font-size: 13px;
+  cursor: pointer; transition: all 0.2s; font-weight: 500;
+  white-space: nowrap;
+}
+.segmented-control button.active {
+  background: var(--primary); color: var(--fg-on-color);
+  box-shadow: var(--shadow-sm);
+}
+.segmented-control button:not(.active):hover { color: var(--fg); background: var(--surface-hover); }
+
+/* Sliders */
+.slider-row {
+  display: flex; align-items: center; gap: 12px;
+}
+.slider-row input[type="range"] {
+  flex: 1; height: 6px; -webkit-appearance: none; appearance: none;
+  background: var(--border); border-radius: 3px; outline: none;
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px;
+  background: var(--primary); border-radius: 50%; cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2); border: 2px solid var(--fg-on-color);
+}
+.slider-value {
+  min-width: 36px; text-align: center; font-size: 14px;
+  font-weight: 600; color: var(--primary); background: var(--primary-light);
+  border-radius: var(--radius-sm); padding: 2px 8px;
+}
+
+/* Toggle Section */
+.toggle-section {
+  padding: 14px; background: var(--bg); border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+}
+.toggle-section.active-toggle { border-color: var(--primary); background: var(--primary-light); }
+.toggle-header {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: default;
+}
+.toggle-title {
+  font-size: 14px; font-weight: 600; color: var(--fg);
+  display: flex; align-items: center; gap: 8px;
+}
+.toggle-desc {
+  font-size: 12px; color: var(--fg-muted); margin-top: 6px; line-height: 1.5;
+}
+.toggle-extra { margin-top: 10px; }
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative; width: 40px; height: 22px; flex-shrink: 0;
+}
+.toggle-switch input { display: none; }
+.toggle-switch label {
+  display: block; width: 100%; height: 100%; background: var(--border);
+  border-radius: 11px; cursor: pointer; transition: background 0.25s;
+}
+.toggle-switch label::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; background: var(--fg-on-color); border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.25s;
+}
+.toggle-switch input:checked + label { background: var(--primary); }
+.toggle-switch input:checked + label::after { transform: translateX(18px); }
+
+/* Search Input */
+.search-textarea {
+  width: 100%; min-height: 88px; padding: 12px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg); color: var(--fg); font-size: 14px;
+  resize: vertical; outline: none; line-height: 1.6;
+  font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+.search-textarea::placeholder { color: var(--fg-subtle); }
+
+/* Search Button */
+.search-btn {
+  width: 100%; height: 42px; border: none; border-radius: var(--radius);
+  background: var(--primary); color: var(--fg-on-color); font-size: 15px;
+  font-weight: 600; cursor: pointer; transition: background 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.search-btn:hover { background: var(--primary-hover); }
+.search-btn .kbd {
+  font-size: 11px; opacity: 0.7; font-weight: 400;
+  border: 1px solid rgba(255,255,255,0.3); border-radius: 3px;
+  padding: 1px 6px; margin-left: 4px;
+}
+
+/* History */
+.history-section { margin-top: 6px; }
+.history-toggle {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--fg-muted); cursor: pointer;
+  background: none; border: none; padding: 6px 0; width: 100%;
+  transition: color 0.2s;
+}
+.history-toggle:hover { color: var(--fg2); }
+.history-toggle svg { width: 14px; height: 14px; transition: transform 0.2s; }
+.history-toggle.expanded svg { transform: rotate(90deg); }
+.history-list {
+  list-style: none; overflow: hidden; max-height: 0;
+  transition: max-height 0.3s ease;
+}
+.history-list.show { max-height: 200px; }
+.history-list li {
+  padding: 8px 10px; font-size: 13px; color: var(--fg2);
+  border-radius: var(--radius-sm); cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: background 0.15s;
+}
+.history-list li:hover { background: var(--surface-hover); }
+.history-list li svg { width: 14px; height: 14px; color: var(--fg-subtle); flex-shrink: 0; }
+.history-list li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ========== Right Results Area ========== */
+[data-component="results-area"] {
+  flex: 1; overflow-y: auto; padding: 20px 24px;
+}
+
+/* Statistics Bar */
+[data-component="stats-bar"] {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap; margin-bottom: 18px;
+  padding: 12px 16px; background: var(--surface);
+  border-radius: var(--radius); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.stat-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--fg2); padding: 2px 0;
+}
+.stat-item .stat-label { color: var(--fg-muted); }
+.stat-item .stat-value { font-weight: 600; color: var(--fg); }
+.stat-divider {
+  width: 1px; height: 16px; background: var(--border); margin: 0 6px;
+}
+.stat-item.highlight .stat-value { color: var(--primary); }
+
+/* Query Rewrite Card */
+[data-component="rewrite-card"] {
+  background: var(--primary-light); border: 1px solid var(--primary);
+  border-radius: var(--radius); padding: 16px 20px;
+  margin-bottom: 18px; transition: all 0.3s;
+}
+.rewrite-card-title {
+  font-size: 13px; font-weight: 600; color: var(--primary);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.rewrite-card-title svg { width: 16px; height: 16px; }
+.rewrite-flow {
+  display: flex; align-items: center; gap: 14px;
+}
+.rewrite-original, .rewrite-result {
+  flex: 1; padding: 10px 14px; border-radius: var(--radius);
+}
+.rewrite-original {
+  background: var(--surface); border: 1px solid var(--border);
+}
+.rewrite-result { background: var(--surface); border: 1px solid var(--primary); }
+.rewrite-label {
+  font-size: 11px; color: var(--fg-muted); margin-bottom: 4px; font-weight: 500;
+}
+.rewrite-text { font-size: 14px; color: var(--fg); line-height: 1.5; }
+.rewrite-result .rewrite-text { color: var(--primary); font-weight: 500; }
+.rewrite-arrow {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--primary); color: var(--fg-on-color);
+  display: flex; align-items: center; justify-content: center;
+}
+.rewrite-arrow svg { width: 18px; height: 18px; }
+.rewrite-card.hidden { display: none; }
+
+/* Rerank Comparison */
+[data-component="rerank-comparison"] {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+}
+[data-component="rerank-comparison"].single-view {
+  grid-template-columns: 1fr;
+}
+.result-column-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; margin-bottom: 12px;
+  border-radius: var(--radius); font-size: 14px; font-weight: 600;
+}
+.result-column-header.muted {
+  background: var(--bg2); color: var(--fg-muted);
+  border: 1px solid var(--border-subtle);
+}
+.result-column-header.primary-header {
+  background: var(--primary-light); color: var(--primary);
+  border: 1px solid var(--primary);
+}
+.result-column-header svg { width: 16px; height: 16px; }
+
+/* Result Items */
+.result-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+  margin-bottom: 10px; transition: box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+}
+.result-item:hover {
+  box-shadow: var(--shadow-md); border-color: var(--primary);
+}
+.result-item-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+}
+.result-rank {
+  font-size: 12px; font-weight: 700; color: var(--fg-muted);
+  background: var(--bg2); border-radius: var(--radius-sm);
+  padding: 2px 8px; flex-shrink: 0;
+}
+.result-title {
+  font-size: 14px; font-weight: 600; color: var(--fg);
+  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.result-score {
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+.result-score.high { color: var(--success); }
+.result-score.mid { color: var(--warn); }
+.result-score.low { color: var(--danger); }
+.result-meta {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 12px; color: var(--fg-muted); margin-bottom: 8px;
+}
+.result-meta .kb-tag {
+  background: var(--bg2); padding: 1px 8px; border-radius: 10px;
+}
+.score-bar-container {
+  width: 80px; height: 5px; background: var(--bg2);
+  border-radius: 3px; overflow: hidden;
+}
+.score-bar {
+  height: 100%; border-radius: 3px; transition: width 0.4s;
+}
+.score-bar.high { background: var(--success); }
+.score-bar.mid { background: var(--warn); }
+.score-bar.low { background: var(--danger); }
+.result-snippet {
+  font-size: 13px; color: var(--fg2); line-height: 1.6;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+/* Position Change Indicator */
+.position-change {
+  position: absolute; top: 12px; right: 12px;
+  font-size: 12px; font-weight: 700; padding: 2px 8px;
+  border-radius: 10px; display: flex; align-items: center; gap: 3px;
+}
+.position-change.up { color: var(--success); background: var(--success-light); }
+.position-change.down { color: var(--danger); background: var(--danger-light); }
+.position-change.same { color: var(--fg-subtle); background: var(--bg2); }
+
+/* Connector lines between columns */
+.connector-indicator {
+  display: none;
+}
+[data-component="rerank-comparison"]:not(.single-view) .connector-indicator {
+  display: block;
+  position: absolute; top: 50%; width: 18px;
+  height: 2px; background: var(--border);
+}
+
+/* Single-view hides the rerank column */
+.single-view .rerank-column { display: none; }
+.single-view .result-column-header.primary-header { display: none; }
+
+/* Responsive scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
+
+/* Transitions for show/hide */
+.fade-enter { opacity: 0; transform: translateY(8px); }
+.fade-active { opacity: 1; transform: translateY(0); transition: all 0.3s; }
+
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--fg-muted);
+}
+.empty-state svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.4; }
+.empty-state p { font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ========== Top Navigation ========== -->
+<nav data-component="topnav">
+  <div class="topnav-brand">
+    <svg viewBox="0 0 28 28" fill="none">
+      <rect width="28" height="28" rx="6" fill="currentColor" opacity="0.12"/>
+      <path d="M7 8h14M7 14h10M7 20h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="21" cy="20" r="3" fill="currentColor"/>
+    </svg>
+    <span>知源</span>
+  </div>
+  <div class="topnav-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+    <input type="text" placeholder="搜索知识库、文档、设置...">
+  </div>
+  <div class="topnav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+      <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+      </svg>
+    </button>
+    <div class="user-avatar" title="张明">张</div>
+  </div>
+</nav>
+
+<!-- ========== Main Layout ========== -->
+<div data-component="main-layout">
+
+  <!-- ===== Left Config Panel ===== -->
+  <aside data-component="config-panel">
+    <div class="config-header">
+      <h1>检索测试</h1>
+      <div class="kb-name">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        技术文档知识库
+      </div>
+    </div>
+
+    <!-- Knowledge Base Selector -->
+    <div class="config-section">
+      <div class="config-label">知识库</div>
+      <select class="config-select">
+        <option selected>技术文档知识库</option>
+        <option>产品需求文档</option>
+        <option>运维手册</option>
+        <option>API 接口文档</option>
+      </select>
+    </div>
+
+    <!-- Search Mode -->
+    <div class="config-section">
+      <div class="config-label">检索模式</div>
+      <div class="segmented-control" data-component="search-mode">
+        <button onclick="setSearchMode(this, 'vector')">向量检索</button>
+        <button onclick="setSearchMode(this, 'fulltext')">全文检索</button>
+        <button class="active" onclick="setSearchMode(this, 'hybrid')">混合检索</button>
+      </div>
+    </div>
+
+    <!-- TopK Slider -->
+    <div class="config-section">
+      <div class="config-label">
+        <span>TopK 返回数量</span>
+        <span class="badge" id="topk-badge">10</span>
+      </div>
+      <div class="slider-row">
+        <span style="font-size:12px;color:var(--fg-subtle)">1</span>
+        <input type="range" min="1" max="50" value="10" id="topk-slider" oninput="updateTopK(this.value)">
+        <span style="font-size:12px;color:var(--fg-subtle)">50</span>
+        <span class="slider-value" id="topk-value">10</span>
+      </div>
+    </div>
+
+    <!-- Similarity Threshold -->
+    <div class="config-section">
+      <div class="config-label">
+        <span>相似度阈值</span>
+        <span class="badge" id="threshold-badge">0.65</span>
+      </div>
+      <div class="slider-row">
+        <span style="font-size:12px;color:var(--fg-subtle)">0</span>
+        <input type="range" min="0" max="1" step="0.05" value="0.65" id="threshold-slider" oninput="updateThreshold(this.value)">
+        <span style="font-size:12px;color:var(--fg-subtle)">1</span>
+        <span class="slider-value" id="threshold-value">0.65</span>
+      </div>
+    </div>
+
+    <!-- Query Rewrite Toggle -->
+    <div class="config-section">
+      <div class="toggle-section active-toggle" id="rewrite-section">
+        <div class="toggle-header">
+          <div class="toggle-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            查询改写
+          </div>
+          <div class="toggle-switch">
+            <input type="checkbox" id="rewrite-toggle" checked onchange="toggleRewrite(this.checked)">
+            <label for="rewrite-toggle"></label>
+          </div>
+        </div>
+        <div class="toggle-desc">使用 LLM 改写用户查询以提升召回质量</div>
+      </div>
+    </div>
+
+    <!-- Rerank Toggle -->
+    <div class="config-section">
+      <div class="toggle-section active-toggle" id="rerank-section">
+        <div class="toggle-header">
+          <div class="toggle-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h12M3 18h6"/></svg>
+            结果重排序 (Rerank)
+          </div>
+          <div class="toggle-switch">
+            <input type="checkbox" id="rerank-toggle" checked onchange="toggleRerank(this.checked)">
+            <label for="rerank-toggle"></label>
+          </div>
+        </div>
+        <div class="toggle-desc">对初始检索结果进行二次排序</div>
+        <div class="toggle-extra" id="rerank-model-select">
+          <select class="config-select" style="margin-top:4px">
+            <option selected>bge-reranker-large</option>
+            <option>bge-reranker-base</option>
+            <option>cohere-rerank-v3</option>
+            <option>cross-encoder/ms-marco</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="config-section">
+      <div class="config-label">检索查询</div>
+      <textarea class="search-textarea" id="search-input" placeholder="输入检索查询...">如何配置微服务的数据库连接池</textarea>
+    </div>
+
+    <!-- Search Button -->
+    <div class="config-section">
+      <button class="search-btn" onclick="performSearch()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        开始检索
+        <span class="kbd">Ctrl+Enter</span>
+      </button>
+    </div>
+
+    <!-- Search History -->
+    <div class="config-section history-section">
+      <button class="history-toggle expanded" onclick="toggleHistory(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        搜索历史
+      </button>
+      <ul class="history-list show" id="history-list">
+        <li onclick="fillHistory(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>微服务注册中心配置方法</span>
+        </li>
+        <li onclick="fillHistory(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>Spring Cloud Gateway 路由规则</span>
+        </li>
+        <li onclick="fillHistory(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>Kubernetes Pod 资源限制与调度策略</span>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- ===== Right Results Area ===== -->
+  <main data-component="results-area">
+
+    <!-- Statistics Bar -->
+    <div data-component="stats-bar">
+      <div class="stat-item">
+        <span class="stat-label">结果数:</span>
+        <span class="stat-value">8</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-label">平均分:</span>
+        <span class="stat-value">0.82</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-label">最高分:</span>
+        <span class="stat-value" style="color:var(--success)">0.95</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-label">最低分:</span>
+        <span class="stat-value" style="color:var(--warn)">0.68</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-label">检索耗时:</span>
+        <span class="stat-value">234ms</span>
+      </div>
+      <div class="stat-divider" id="rewrite-time-divider"></div>
+      <div class="stat-item highlight" id="rewrite-time-stat">
+        <span class="stat-label">改写耗时:</span>
+        <span class="stat-value">156ms</span>
+      </div>
+      <div class="stat-divider" id="rerank-time-divider"></div>
+      <div class="stat-item highlight" id="rerank-time-stat">
+        <span class="stat-label">重排耗时:</span>
+        <span class="stat-value">89ms</span>
+      </div>
+    </div>
+
+    <!-- Query Rewrite Result Card -->
+    <div data-component="rewrite-card" id="rewrite-card">
+      <div class="rewrite-card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        查询改写结果
+      </div>
+      <div class="rewrite-flow">
+        <div class="rewrite-original">
+          <div class="rewrite-label">原始查询:</div>
+          <div class="rewrite-text">如何配置微服务的数据库连接池</div>
+        </div>
+        <div class="rewrite-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="rewrite-result">
+          <div class="rewrite-label">改写查询:</div>
+          <div class="rewrite-text">微服务架构中数据库连接池的配置方法、参数设置和最佳实践</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rerank Comparison View -->
+    <div data-component="rerank-comparison" id="rerank-comparison">
+
+      <!-- Left Column: Initial Results -->
+      <div class="initial-column">
+        <div class="result-column-header muted">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          初始检索结果
+        </div>
+
+        <!-- Initial Result #1 -->
+        <div class="result-item" data-doc="db-guide">
+          <div class="result-item-header">
+            <span class="result-rank">#1</span>
+            <span class="result-title">数据库连接池配置指南</span>
+            <span class="result-score high">0.95</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar high" style="width:95%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">本文档详细介绍了数据库连接池的核心配置参数，包括最大连接数、最小空闲连接、连接超时时间等关键指标的推荐值和调优建议。适用于 MySQL、PostgreSQL 等主流数据库...</div>
+        </div>
+
+        <!-- Initial Result #2 -->
+        <div class="result-item" data-doc="microservice-design">
+          <div class="result-item-header">
+            <span class="result-rank">#2</span>
+            <span class="result-title">微服务架构设计规范</span>
+            <span class="result-score high">0.91</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar high" style="width:91%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">微服务架构中，每个服务独立管理自己的数据库连接。本规范定义了服务间数据访问的标准模式，包括连接池共享策略、多数据源配置和分布式事务处理方案...</div>
+        </div>
+
+        <!-- Initial Result #3 -->
+        <div class="result-item" data-doc="docker-network">
+          <div class="result-item-header">
+            <span class="result-rank">#3</span>
+            <span class="result-title">Docker 容器网络配置</span>
+            <span class="result-score mid">0.78</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar mid" style="width:78%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">Docker 容器网络配置涵盖桥接网络、覆盖网络和主机网络等模式。在微服务部署中，容器间的数据库连接需要正确配置网络策略以确保连接池可以正常访问数据库服务...</div>
+        </div>
+
+        <!-- Initial Result #4 -->
+        <div class="result-item" data-doc="distributed-db">
+          <div class="result-item-header">
+            <span class="result-rank">#4</span>
+            <span class="result-title">分布式系统数据库设计</span>
+            <span class="result-score high">0.82</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar high" style="width:82%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">分布式系统中的数据库设计需要考虑数据分片、读写分离和连接池管理。本文阐述了在高并发场景下如何合理设置连接池大小，以及跨数据中心的连接池故障转移策略...</div>
+        </div>
+
+        <!-- Initial Result #5 -->
+        <div class="result-item" data-doc="springboot-datasource">
+          <div class="result-item-header">
+            <span class="result-rank">#5</span>
+            <span class="result-title">Spring Boot 数据源配置</span>
+            <span class="result-score high">0.88</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar high" style="width:88%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">Spring Boot 通过 application.yml 提供数据源的快速配置，支持 HikariCP、Tomcat JDBC 等多种连接池实现。本文介绍如何自定义连接池参数、多数据源配置及动态数据源切换...</div>
+        </div>
+
+        <!-- Initial Result #6 -->
+        <div class="result-item" data-doc="hikaricp-tuning">
+          <div class="result-item-header">
+            <span class="result-rank">#6</span>
+            <span class="result-title">HikariCP 连接池调优实践</span>
+            <span class="result-score high">0.85</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar high" style="width:85%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">HikariCP 是目前性能最优的 Java 连接池实现。本文分享了在生产环境中对 HikariCP 进行调优的实战经验，涵盖 maximumPoolSize、connectionTimeout、idleTimeout 等核心参数...</div>
+        </div>
+      </div>
+
+      <!-- Right Column: Rerank Results -->
+      <div class="rerank-column" id="rerank-column">
+        <div class="result-column-header primary-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h12M3 18h6"/></svg>
+          Rerank 重排结果
+        </div>
+
+        <!-- Rerank Result #1 (was #1 initial) -->
+        <div class="result-item" data-doc="db-guide">
+          <span class="position-change same">— 0</span>
+          <div class="result-item-header">
+            <span class="result-rank">#1</span>
+            <span class="result-title">数据库连接池配置指南</span>
+            <span class="result-score high">0.97</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar high" style="width:97%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">本文档详细介绍了数据库连接池的核心配置参数，包括最大连接数、最小空闲连接、连接超时时间等关键指标的推荐值和调优建议。适用于 MySQL、PostgreSQL 等主流数据库...</div>
+        </div>
+
+        <!-- Rerank Result #2 (was #2 initial) -->
+        <div class="result-item" data-doc="microservice-design">
+          <span class="position-change same">— 0</span>
+          <div class="result-item-header">
+            <span class="result-rank">#2</span>
+            <span class="result-title">微服务架构设计规范</span>
+            <span class="result-score high">0.93</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar high" style="width:93%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">微服务架构中，每个服务独立管理自己的数据库连接。本规范定义了服务间数据访问的标准模式，包括连接池共享策略、多数据源配置和分布式事务处理方案...</div>
+        </div>
+
+        <!-- Rerank Result #3 (was #5 initial, moved up 2) -->
+        <div class="result-item" data-doc="springboot-datasource">
+          <span class="position-change up">&#8593;2</span>
+          <div class="result-item-header">
+            <span class="result-rank">#3</span>
+            <span class="result-title">Spring Boot 数据源配置</span>
+            <span class="result-score high">0.92</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar high" style="width:92%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">Spring Boot 通过 application.yml 提供数据源的快速配置，支持 HikariCP、Tomcat JDBC 等多种连接池实现。本文介绍如何自定义连接池参数、多数据源配置及动态数据源切换...</div>
+        </div>
+
+        <!-- Rerank Result #4 (was #6 initial, moved up 2) -->
+        <div class="result-item" data-doc="hikaricp-tuning">
+          <span class="position-change up">&#8593;2</span>
+          <div class="result-item-header">
+            <span class="result-rank">#4</span>
+            <span class="result-title">HikariCP 连接池调优实践</span>
+            <span class="result-score high">0.90</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar high" style="width:90%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">HikariCP 是目前性能最优的 Java 连接池实现。本文分享了在生产环境中对 HikariCP 进行调优的实战经验，涵盖 maximumPoolSize、connectionTimeout、idleTimeout 等核心参数...</div>
+        </div>
+
+        <!-- Rerank Result #5 (was #4 initial, moved down 1) -->
+        <div class="result-item" data-doc="distributed-db">
+          <span class="position-change down">&#8595;1</span>
+          <div class="result-item-header">
+            <span class="result-rank">#5</span>
+            <span class="result-title">分布式系统数据库设计</span>
+            <span class="result-score mid">0.78</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar mid" style="width:78%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">分布式系统中的数据库设计需要考虑数据分片、读写分离和连接池管理。本文阐述了在高并发场景下如何合理设置连接池大小，以及跨数据中心的连接池故障转移策略...</div>
+        </div>
+
+        <!-- Rerank Result #6 (was #3 initial, moved down 3) -->
+        <div class="result-item" data-doc="docker-network">
+          <span class="position-change down">&#8595;3</span>
+          <div class="result-item-header">
+            <span class="result-rank">#6</span>
+            <span class="result-title">Docker 容器网络配置</span>
+            <span class="result-score mid">0.65</span>
+          </div>
+          <div class="result-meta">
+            <span class="kb-tag">技术文档知识库</span>
+            <div class="score-bar-container">
+              <div class="score-bar mid" style="width:65%"></div>
+            </div>
+          </div>
+          <div class="result-snippet">Docker 容器网络配置涵盖桥接网络、覆盖网络和主机网络等模式。在微服务部署中，容器间的数据库连接需要正确配置网络策略以确保连接池可以正常访问数据库服务...</div>
+        </div>
+      </div>
+
+    </div><!-- /rerank-comparison -->
+
+  </main>
+</div>
+
+<script>
+/* ========== Theme Toggle ========== */
+function toggleTheme() {
+  var html = document.documentElement;
+  var current = html.getAttribute('data-theme');
+  var next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  var sunIcon = document.querySelector('.icon-sun');
+  var moonIcon = document.querySelector('.icon-moon');
+  if (next === 'dark') {
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+  } else {
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  }
+}
+
+/* ========== Search Mode ========== */
+function setSearchMode(btn, mode) {
+  var buttons = btn.parentElement.querySelectorAll('button');
+  buttons.forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+/* ========== TopK Slider ========== */
+function updateTopK(val) {
+  document.getElementById('topk-value').textContent = val;
+  document.getElementById('topk-badge').textContent = val;
+}
+
+/* ========== Threshold Slider ========== */
+function updateThreshold(val) {
+  document.getElementById('threshold-value').textContent = val;
+  document.getElementById('threshold-badge').textContent = val;
+}
+
+/* ========== Query Rewrite Toggle ========== */
+function toggleRewrite(isOn) {
+  var card = document.getElementById('rewrite-card');
+  var section = document.getElementById('rewrite-section');
+  var timeStat = document.getElementById('rewrite-time-stat');
+  var timeDivider = document.getElementById('rewrite-time-divider');
+
+  if (isOn) {
+    card.classList.remove('hidden');
+    section.classList.add('active-toggle');
+    timeStat.style.display = '';
+    timeDivider.style.display = '';
+  } else {
+    card.classList.add('hidden');
+    section.classList.remove('active-toggle');
+    timeStat.style.display = 'none';
+    timeDivider.style.display = 'none';
+  }
+}
+
+/* ========== Rerank Toggle ========== */
+function toggleRerank(isOn) {
+  var comparison = document.getElementById('rerank-comparison');
+  var section = document.getElementById('rerank-section');
+  var modelSelect = document.getElementById('rerank-model-select');
+  var timeStat = document.getElementById('rerank-time-stat');
+  var timeDivider = document.getElementById('rerank-time-divider');
+
+  if (isOn) {
+    comparison.classList.remove('single-view');
+    section.classList.add('active-toggle');
+    modelSelect.style.display = '';
+    timeStat.style.display = '';
+    timeDivider.style.display = '';
+  } else {
+    comparison.classList.add('single-view');
+    section.classList.remove('active-toggle');
+    modelSelect.style.display = 'none';
+    timeStat.style.display = 'none';
+    timeDivider.style.display = 'none';
+  }
+}
+
+/* ========== Search History ========== */
+function toggleHistory(btn) {
+  var list = document.getElementById('history-list');
+  btn.classList.toggle('expanded');
+  list.classList.toggle('show');
+}
+
+function fillHistory(li) {
+  var text = li.querySelector('span').textContent;
+  document.getElementById('search-input').value = text;
+}
+
+/* ========== Perform Search (simulated) ========== */
+function performSearch() {
+  var btn = document.querySelector('.search-btn');
+  var originalText = btn.innerHTML;
+  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg> 检索中...';
+  btn.style.opacity = '0.8';
+  btn.style.pointerEvents = 'none';
+
+  setTimeout(function() {
+    btn.innerHTML = originalText;
+    btn.style.opacity = '';
+    btn.style.pointerEvents = '';
+  }, 1200);
+}
+
+/* ========== Ctrl+Enter Shortcut ========== */
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    performSearch();
+  }
+});
+
+/* ========== Spin animation for loading ========== */
+var styleSheet = document.createElement('style');
+styleSheet.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+document.head.appendChild(styleSheet);
+</script>
+
+</body>
+</html>

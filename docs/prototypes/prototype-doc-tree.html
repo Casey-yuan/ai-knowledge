@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知源 - 产品技术文档库</title>
+<style>
+:root {
+  --seed-primary: #3b5ccc;
+  --seed-accent: #5b6ef5;
+  --seed-bg: #f5f7fa;
+  --seed-fg: #1a1f36;
+  --seed-surface: #fff;
+  --seed-radius: 8;
+  --seed-success: #22a06b;
+  --seed-warn: #e68a00;
+  --seed-danger: #e34850;
+  --seed-muted: #6b7a90;
+  --seed-border: #e2e8f0;
+  /* Light palette (defaults) */
+  --bg2-light: #edf0f5;
+  --surface-hover-light: #f0f3f8;
+  --fg2-light: #3d4f65;
+  --fg-subtle-light: #9aa5b4;
+  --border-subtle-light: #edf0f5;
+  --primary-light-color: #e8eeff;
+  --primary-hover-light: #2d4db8;
+  --success-light-color: #e6f7ef;
+  --warn-light-color: #fff7e6;
+  --danger-light-color: #fce8ea;
+  /* Dark palette */
+  --bg-dark: #0e1117;
+  --bg2-dark: #151921;
+  --surface-dark: #1a1f2b;
+  --surface-hover-dark: #222838;
+  --surface-raised-dark: #212735;
+  --fg-dark: #e8ecf2;
+  --fg2-dark: #a8b4c4;
+  --fg-muted-dark: #6b7a90;
+  --fg-subtle-dark: #4a5568;
+  --primary-dark: #5b7fff;
+  --primary-hover-dark: #7b99ff;
+  --accent-dark: #7c8fff;
+  --success-dark: #36b37e;
+  --warn-dark: #f0a830;
+  --danger-dark: #f06070;
+  /* Shared */
+  --fg-on-primary: #fff;
+  --fg-inverse-light: #fff;
+  --fg-inverse-dark: #fff;
+}
+
+[data-theme="light"] {
+  --bg: var(--seed-bg);
+  --bg2: var(--bg2-light);
+  --surface: var(--seed-surface);
+  --surface-hover: var(--surface-hover-light);
+  --surface-raised: var(--seed-surface);
+  --fg: var(--seed-fg);
+  --fg2: var(--fg2-light);
+  --fg-muted: var(--seed-muted);
+  --fg-subtle: var(--fg-subtle-light);
+  --border: var(--seed-border);
+  --border-subtle: var(--border-subtle-light);
+  --primary: var(--seed-primary);
+  --primary-light: var(--primary-light-color);
+  --primary-hover: var(--primary-hover-light);
+  --accent: var(--seed-accent);
+  --success: var(--seed-success);
+  --success-light: var(--success-light-color);
+  --warn: var(--seed-warn);
+  --warn-light: var(--warn-light-color);
+  --danger: var(--seed-danger);
+  --danger-light: var(--danger-light-color);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --bg-subtle: var(--bg2);
+  --fg-secondary: var(--fg2);
+  --fg-inverse: var(--fg-inverse-light);
+  --fg-placeholder: var(--fg-subtle);
+}
+
+[data-theme="dark"] {
+  --bg: var(--bg-dark);
+  --bg2: var(--bg2-dark);
+  --surface: var(--surface-dark);
+  --surface-hover: var(--surface-hover-dark);
+  --surface-raised: var(--surface-raised-dark);
+  --fg: var(--fg-dark);
+  --fg2: var(--fg2-dark);
+  --fg-muted: var(--fg-muted-dark);
+  --fg-subtle: var(--fg-subtle-dark);
+  --border: rgba(255,255,255,0.08);
+  --border-subtle: rgba(255,255,255,0.05);
+  --primary: var(--primary-dark);
+  --primary-light: rgba(91,127,255,0.12);
+  --primary-hover: var(--primary-hover-dark);
+  --accent: var(--accent-dark);
+  --success: var(--success-dark);
+  --success-light: rgba(54,179,126,0.12);
+  --warn: var(--warn-dark);
+  --warn-light: rgba(240,168,48,0.12);
+  --danger: var(--danger-dark);
+  --danger-light: rgba(240,96,112,0.12);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --bg-subtle: var(--bg2);
+  --fg-secondary: var(--fg2);
+  --fg-inverse: var(--fg-inverse-dark);
+  --fg-placeholder: var(--fg-subtle);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ===== Top Navigation Bar ===== */
+[data-component="top-nav"] {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding: 0 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.nav-brand svg { flex-shrink: 0; }
+
+.nav-search {
+  flex: 0 1 420px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.nav-search input {
+  width: 100%;
+  height: 34px;
+  padding: 0 14px 0 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.nav-search input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.nav-search input::placeholder { color: var(--fg-subtle); }
+
+.nav-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--fg-subtle);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.nav-icon-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-icon-btn:hover {
+  background: var(--surface-hover);
+  color: var(--fg);
+}
+
+.nav-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: var(--fg-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+/* ===== Page Header ===== */
+[data-component="page-header"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-back {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-back:hover { background: var(--surface-hover); color: var(--fg); }
+
+.page-header-info h1 {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tag-public {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.page-header-info p {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg2);
+  white-space: nowrap;
+}
+
+.btn:hover { background: var(--surface-hover); }
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--fg-on-primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+
+/* ===== Main Layout ===== */
+[data-component="main-layout"] {
+  display: flex;
+  height: calc(100vh - 52px - 75px);
+  overflow: hidden;
+}
+
+/* ===== Sidebar ===== */
+[data-component="sidebar"] {
+  width: 280px;
+  min-width: 280px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.25s ease, min-width 0.25s ease;
+  overflow: hidden;
+}
+
+[data-component="sidebar"].collapsed {
+  width: 0;
+  min-width: 0;
+  border-right: none;
+}
+
+.sidebar-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 14px 8px;
+  flex-shrink: 0;
+}
+
+.sidebar-search {
+  flex: 1;
+  position: relative;
+}
+
+.sidebar-search input {
+  width: 100%;
+  height: 30px;
+  padding: 0 10px 0 30px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.sidebar-search input:focus { border-color: var(--primary); }
+.sidebar-search input::placeholder { color: var(--fg-subtle); }
+
+.sidebar-search-icon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--fg-subtle);
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.view-toggle button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--surface);
+  color: var(--fg-subtle);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.view-toggle button.active {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.view-toggle button:not(.active):hover { background: var(--surface-hover); }
+
+.sidebar-toggle-btn {
+  position: absolute;
+  left: 280px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  width: 18px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: none;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  cursor: pointer;
+  color: var(--fg-subtle);
+  transition: left 0.25s ease, color 0.15s;
+}
+
+.sidebar-toggle-btn:hover { color: var(--fg); }
+.sidebar-toggle-btn.collapsed { left: 0; }
+
+/* ===== Tree ===== */
+[data-component="doc-tree"] {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 8px 16px;
+}
+
+[data-component="doc-tree"]::-webkit-scrollbar { width: 5px; }
+[data-component="doc-tree"]::-webkit-scrollbar-track { background: transparent; }
+[data-component="doc-tree"]::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.tree-node {
+  user-select: none;
+}
+
+.tree-node-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  margin: 1px 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.12s;
+  border-left: 2px solid transparent;
+}
+
+.tree-node-row:hover {
+  background: var(--surface-hover);
+}
+
+.tree-node-row.selected {
+  background: var(--primary-light);
+  border-left-color: var(--primary);
+}
+
+.tree-node-row .drag-handle {
+  opacity: 0;
+  color: var(--fg-subtle);
+  cursor: grab;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.tree-node-row:hover .drag-handle { opacity: 1; }
+
+.tree-arrow {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+  transition: transform 0.2s;
+}
+
+.tree-arrow.expanded { transform: rotate(90deg); }
+.tree-arrow.hidden { visibility: hidden; }
+
+.tree-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tree-icon.folder { color: var(--warn); }
+.tree-icon.file-md { color: var(--primary); }
+.tree-icon.file-generic { color: var(--fg-muted); }
+
+.tree-label {
+  flex: 1;
+  font-size: 13px;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+
+.tree-status {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.tree-status.completed { background: var(--success); }
+.tree-status.processing { background: var(--warn); animation: pulse 1.5s infinite; }
+.tree-status.failed { background: var(--danger); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.tree-children {
+  padding-left: 20px;
+}
+
+.tree-children.collapsed { display: none; }
+
+/* Drag visual state */
+.tree-node-row.dragging {
+  opacity: 0.85;
+  background: var(--primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+  z-index: 10;
+  position: relative;
+}
+
+.drop-indicator {
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+  margin: 0 8px;
+  box-shadow: 0 0 4px var(--primary);
+}
+
+/* ===== Content Area ===== */
+[data-component="content-area"] {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px;
+  background: var(--bg);
+}
+
+[data-component="content-area"]::-webkit-scrollbar { width: 6px; }
+[data-component="content-area"]::-webkit-scrollbar-track { background: transparent; }
+[data-component="content-area"]::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Overview Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon.total { background: var(--primary-light); color: var(--primary); }
+.stat-icon.done { background: var(--success-light); color: var(--success); }
+.stat-icon.progress { background: var(--warn-light); color: var(--warn); }
+.stat-icon.error { background: var(--danger-light); color: var(--danger); }
+
+.stat-info h3 { font-size: 22px; font-weight: 700; line-height: 1.2; }
+.stat-info p { font-size: 12px; color: var(--fg-muted); margin-top: 2px; }
+
+/* Section headings */
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: var(--fg);
+}
+
+/* Document Preview */
+[data-component="doc-preview"] {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.doc-preview-header {
+  padding: 24px 28px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.doc-preview-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.doc-meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.doc-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.doc-meta-item .meta-label { color: var(--fg-subtle); }
+
+.doc-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.doc-status-badge.completed { background: var(--success-light); color: var(--success); }
+.doc-status-badge.processing { background: var(--warn-light); color: var(--warn); }
+.doc-status-badge.failed { background: var(--danger-light); color: var(--danger); }
+
+.doc-tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  background: var(--primary-light);
+  color: var(--primary);
+  margin-right: 4px;
+}
+
+.doc-preview-body {
+  padding: 24px 28px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--fg2);
+}
+
+.doc-preview-body h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg);
+  margin: 20px 0 8px;
+}
+
+.doc-preview-body h3:first-child { margin-top: 0; }
+
+.doc-preview-body p { margin: 8px 0; }
+
+.doc-preview-body code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  color: var(--accent);
+}
+
+.doc-preview-body pre {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  overflow-x: auto;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+.doc-preview-body ul, .doc-preview-body ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.doc-preview-body li { margin: 4px 0; }
+
+/* Folder Card Grid */
+.folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.folder-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.folder-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.folder-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.folder-card-icon.folder { background: var(--warn-light); color: var(--warn); }
+.folder-card-icon.file { background: var(--primary-light); color: var(--primary); }
+
+.folder-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folder-card p {
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+
+/* ===== Context Menu ===== */
+[data-component="context-menu"] {
+  position: fixed;
+  z-index: 1000;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  min-width: 168px;
+  display: none;
+}
+
+[data-component="context-menu"].visible { display: block; }
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: var(--fg2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.ctx-item:hover { background: var(--surface-hover); color: var(--fg); }
+
+.ctx-item.danger { color: var(--danger); }
+.ctx-item.danger:hover { background: var(--danger-light); }
+
+.ctx-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 8px;
+}
+
+.ctx-item svg { flex-shrink: 0; color: var(--fg-subtle); }
+.ctx-item.danger svg { color: var(--danger); }
+
+/* ===== Overview Activity ===== */
+.activity-list { display: flex; flex-direction: column; gap: 10px; }
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.activity-dot.completed { background: var(--success); }
+.activity-dot.processing { background: var(--warn); }
+.activity-dot.failed { background: var(--danger); }
+
+.activity-text { flex: 1; font-size: 13px; color: var(--fg2); }
+.activity-time { font-size: 11px; color: var(--fg-subtle); flex-shrink: 0; }
+
+/* ===== Breadcrumb shown in content header ===== */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-bottom: 6px;
+}
+
+.breadcrumb span { cursor: pointer; }
+.breadcrumb span:hover { color: var(--primary); }
+.breadcrumb .sep { color: var(--fg-subtle); cursor: default; }
+.breadcrumb .sep:hover { color: var(--fg-subtle); }
+</style>
+</head>
+<body>
+
+<!-- Top Navigation Bar -->
+<nav data-component="top-nav">
+  <button class="nav-brand" type="button">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/><rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.5"/><rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.5"/><rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.3"/></svg>
+    知源
+  </button>
+  <div class="nav-search">
+    <svg class="nav-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="搜索知识库、文档、标签..." aria-label="搜索知识库、文档、标签" />
+  </div>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" title="通知">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </button>
+    <button class="nav-icon-btn" id="themeToggle" title="切换主题">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" id="themeIcon"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <div class="nav-avatar" title="张明">张</div>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<header data-component="page-header">
+  <div class="page-header-left">
+    <button class="btn-back" title="返回">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div class="page-header-info">
+      <h1>产品技术文档库 <span class="tag-public">公开</span></h1>
+      <p>产品团队核心技术文档集合</p>
+    </div>
+  </div>
+  <div class="page-header-actions">
+    <button class="btn btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      新建文档
+    </button>
+    <button class="btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      上传文件
+    </button>
+    <button class="btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      设置
+    </button>
+  </div>
+</header>
+
+<!-- Main Layout -->
+<div data-component="main-layout" style="position:relative;">
+  <!-- Sidebar Toggle -->
+  <button class="sidebar-toggle-btn" id="sidebarToggle" title="收起/展开侧栏">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+
+  <!-- Left Sidebar -->
+  <aside data-component="sidebar" id="sidebar">
+    <div class="sidebar-toolbar">
+      <div class="sidebar-search">
+        <svg class="sidebar-search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="筛选文档..." id="treeFilter" aria-label="筛选文档" />
+      </div>
+      <div class="view-toggle">
+        <button class="active" id="treeViewBtn" title="树形视图">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
+        </button>
+        <button id="listViewBtn" title="列表视图">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Document Tree -->
+    <div data-component="doc-tree" id="docTree"></div>
+  </aside>
+
+  <!-- Right Content Area -->
+  <main data-component="content-area" id="contentArea"></main>
+</div>
+
+<!-- Context Menu -->
+<div data-component="context-menu" id="contextMenu">
+  <div class="ctx-item" data-action="new-doc">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+    新建文档
+  </div>
+  <div class="ctx-item" data-action="new-folder">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+    新建文件夹
+  </div>
+  <div class="ctx-divider"></div>
+  <div class="ctx-item" data-action="rename">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    重命名
+  </div>
+  <div class="ctx-item" data-action="move">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+    移动到...
+  </div>
+  <div class="ctx-divider"></div>
+  <div class="ctx-item danger" data-action="delete">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+    删除
+  </div>
+</div>
+
+<script>
+// ===== Data Model =====
+const treeData = [
+  {
+    id: 'f1', type: 'folder', name: '系统架构', expanded: true, children: [
+      { id: 'd1', type: 'file', name: '微服务架构设计.md', status: 'completed', ext: 'md' },
+      { id: 'd2', type: 'file', name: '数据库设计规范.md', status: 'completed', ext: 'md' },
+      {
+        id: 'f2', type: 'folder', name: '部署方案', expanded: true, children: [
+          { id: 'd3', type: 'file', name: 'Docker部署指南.md', status: 'completed', ext: 'md' },
+          { id: 'd4', type: 'file', name: 'K8s配置说明.md', status: 'processing', ext: 'md' },
+          { id: 'd5', type: 'file', name: 'CI-CD流水线.md', status: 'completed', ext: 'md' },
+        ]
+      },
+      { id: 'd6', type: 'file', name: '安全策略.md', status: 'failed', ext: 'md' },
+    ]
+  },
+  {
+    id: 'f3', type: 'folder', name: 'API文档', expanded: false, children: [
+      { id: 'd7', type: 'file', name: 'REST API规范.md', status: 'completed', ext: 'md' },
+      { id: 'd8', type: 'file', name: 'GraphQL接口说明.md', status: 'completed', ext: 'md' },
+      { id: 'd9', type: 'file', name: 'WebSocket协议.md', status: 'processing', ext: 'md' },
+    ]
+  },
+  {
+    id: 'f4', type: 'folder', name: '用户手册', expanded: false, children: [
+      { id: 'd10', type: 'file', name: '快速入门指南.md', status: 'completed', ext: 'md' },
+      { id: 'd11', type: 'file', name: '常见问题FAQ.md', status: 'completed', ext: 'md' },
+    ]
+  },
+  { id: 'd12', type: 'file', name: '项目README.md', status: 'completed', ext: 'md' },
+  { id: 'd13', type: 'file', name: '变更日志.md', status: 'completed', ext: 'md' },
+];
+
+// Document content mock data
+const docContents = {
+  d1: {
+    title: '微服务架构设计',
+    version: 'v2.3.1',
+    size: '24.5 KB',
+    chunks: 18,
+    status: 'completed',
+    tags: ['架构', '微服务', '核心文档'],
+    content: `<h3>1. 架构概述</h3>
+<p>本系统采用微服务架构，将核心业务拆分为多个独立服务，通过 API Gateway 统一对外暴露接口。各服务之间通过 <code>gRPC</code> 进行内部通信，使用 <code>Nacos</code> 作为服务注册与发现中心。</p>
+<h3>2. 服务划分</h3>
+<ul>
+  <li><strong>用户服务</strong> (user-service)：负责用户注册、登录、权限管理</li>
+  <li><strong>文档服务</strong> (doc-service)：负责文档的 CRUD、版本控制、全文检索</li>
+  <li><strong>知识图谱服务</strong> (graph-service)：负责实体关系抽取与图谱构建</li>
+  <li><strong>通知服务</strong> (notify-service)：负责站内信、邮件、Webhook 推送</li>
+</ul>
+<h3>3. 技术选型</h3>
+<pre>服务框架:    Spring Cloud Alibaba
+注册中心:    Nacos 2.2.x
+API网关:     Spring Cloud Gateway
+消息队列:    RocketMQ 5.0
+数据库:      MySQL 8.0 + Redis 7.0
+搜索引擎:    Elasticsearch 8.x
+容器编排:    Kubernetes 1.28</pre>
+<h3>4. 部署拓扑</h3>
+<p>生产环境采用多可用区部署，每个核心服务至少 3 个副本，通过 <code>HPA</code> 实现自动弹性伸缩。数据库采用主从架构，读写分离，配合 Canal 实现数据同步。</p>`
+  },
+  d2: {
+    title: '数据库设计规范',
+    version: 'v1.8.0',
+    size: '18.2 KB',
+    chunks: 12,
+    status: 'completed',
+    tags: ['数据库', '规范'],
+    content: `<h3>1. 命名规范</h3>
+<p>所有表名使用小写字母加下划线分隔，前缀标识业务模块。例如：<code>sys_user</code>、<code>doc_article</code>、<code>log_operation</code>。</p>
+<h3>2. 索引设计</h3>
+<ul>
+  <li>每张表必须有主键索引，推荐使用自增 <code>BIGINT</code></li>
+  <li>联合索引遵循最左前缀原则</li>
+  <li>单表索引数量不超过 5 个</li>
+</ul>
+<h3>3. 字段约束</h3>
+<p>所有字段必须设置 <code>NOT NULL</code>，使用默认值代替空值。时间字段统一使用 <code>DATETIME</code> 类型，金额字段使用 <code>DECIMAL(10,2)</code>。</p>`
+  },
+  d3: {
+    title: 'Docker部署指南',
+    version: 'v3.1.0',
+    size: '15.8 KB',
+    chunks: 10,
+    status: 'completed',
+    tags: ['部署', 'Docker', '运维'],
+    content: `<h3>1. 环境准备</h3>
+<p>确保服务器已安装 Docker Engine 24.0+ 和 Docker Compose v2。推荐使用 Ubuntu 22.04 LTS 作为基础操作系统。</p>
+<pre>curl -fsSL https://get.docker.com | sh
+docker compose version</pre>
+<h3>2. 构建镜像</h3>
+<p>项目根目录下提供了统一的 <code>Dockerfile</code>，支持多阶段构建以减小镜像体积。</p>
+<h3>3. 编排配置</h3>
+<p>使用 <code>docker-compose.yml</code> 定义所有服务的运行配置，包括网络、存储卷、环境变量等。</p>`
+  },
+  d4: {
+    title: 'K8s配置说明',
+    version: 'v1.2.0-draft',
+    size: '21.3 KB',
+    chunks: 14,
+    status: 'processing',
+    tags: ['Kubernetes', '部署', '进行中'],
+    content: `<h3>1. 集群配置</h3>
+<p>本文档正在编写中，将涵盖 K8s 集群的完整配置流程，包括 Namespace 规划、RBAC 策略、资源配额等。</p>
+<p><em>注意：此文档仍在处理中，部分内容可能不完整。</em></p>`
+  },
+  d5: {
+    title: 'CI-CD流水线',
+    version: 'v2.0.0',
+    size: '12.4 KB',
+    chunks: 8,
+    status: 'completed',
+    tags: ['CI/CD', 'DevOps'],
+    content: `<h3>1. 流水线概述</h3>
+<p>项目使用 Jenkins + GitLab CI 双流水线架构，开发环境使用 GitLab CI 快速迭代，生产环境通过 Jenkins 进行严格的审批发布流程。</p>
+<h3>2. 构建阶段</h3>
+<pre>stages:
+  - lint        # 代码规范检查
+  - test        # 单元测试 + 集成测试
+  - build       # 构建 Docker 镜像
+  - scan        # 安全漏洞扫描
+  - deploy      # 部署到目标环境</pre>`
+  },
+  d6: {
+    title: '安全策略',
+    version: 'v1.0.0',
+    size: '9.6 KB',
+    chunks: 6,
+    status: 'failed',
+    tags: ['安全', '策略', '异常'],
+    content: `<h3>文档处理失败</h3>
+<p>该文档在解析过程中遇到以下错误：</p>
+<ul>
+  <li>文件格式校验未通过：部分章节编码异常</li>
+  <li>知识图谱实体抽取失败，请检查文档结构是否符合模板要求</li>
+</ul>
+<p>请联系管理员或重新上传文档以修复此问题。</p>`
+  }
+};
+
+// SVG icon helpers
+const icons = {
+  chevron: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>',
+  folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" opacity="0.85"><path d="M10 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2z"/></svg>',
+  folderOpen: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" opacity="0.85"><path d="M2 6a2 2 0 012-2h5l2 2h9a2 2 0 012 2v1H4a2 2 0 00-2 2v6l1.7-6.8A2 2 0 015.6 10H22l-2.1 8.4a2 2 0 01-1.9 1.6H4a2 2 0 01-2-2V6z"/></svg>',
+  fileMd: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><text x="8" y="17" font-size="7" fill="currentColor" stroke="none" font-weight="700" font-family="sans-serif">MD</text></svg>',
+  grip: '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" opacity="0.5"><circle cx="8" cy="6" r="1.5"/><circle cx="16" cy="6" r="1.5"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg>',
+};
+
+// ===== State =====
+let selectedId = null;
+let sidebarCollapsed = false;
+
+// ===== Tree Rendering =====
+function renderTree(nodes, container, depth) {
+  depth = depth || 0;
+  nodes.forEach(function(node) {
+    var treeNode = document.createElement('div');
+    treeNode.className = 'tree-node';
+    treeNode.setAttribute('data-id', node.id);
+
+    var row = document.createElement('div');
+    row.className = 'tree-node-row' + (selectedId === node.id ? ' selected' : '');
+    row.setAttribute('data-id', node.id);
+    row.setAttribute('data-name', node.name);
+
+    // Drag handle
+    var grip = document.createElement('span');
+    grip.className = 'drag-handle';
+    grip.innerHTML = icons.grip;
+    row.appendChild(grip);
+
+    // Arrow
+    var arrow = document.createElement('span');
+    arrow.className = 'tree-arrow' + (node.type === 'folder' ? (node.expanded ? ' expanded' : '') : ' hidden');
+    arrow.innerHTML = icons.chevron;
+    if (node.type === 'folder') {
+      arrow.addEventListener('click', function(e) {
+        e.stopPropagation();
+        node.expanded = !node.expanded;
+        rebuildTree();
+      });
+    }
+    row.appendChild(arrow);
+
+    // Icon
+    var icon = document.createElement('span');
+    if (node.type === 'folder') {
+      icon.className = 'tree-icon folder';
+      icon.innerHTML = node.expanded ? icons.folderOpen : icons.folder;
+    } else {
+      icon.className = 'tree-icon file-md';
+      icon.innerHTML = icons.fileMd;
+    }
+    row.appendChild(icon);
+
+    // Label
+    var label = document.createElement('span');
+    label.className = 'tree-label';
+    label.textContent = node.name;
+    row.appendChild(label);
+
+    // Status dot
+    if (node.status) {
+      var dot = document.createElement('span');
+      dot.className = 'tree-status ' + node.status;
+      dot.title = node.status === 'completed' ? '已完成' : node.status === 'processing' ? '处理中' : '失败';
+      row.appendChild(dot);
+    }
+
+    // Click to select
+    row.addEventListener('click', function() {
+      selectedId = node.id;
+      rebuildTree();
+      renderContent(node);
+    });
+
+    // Right-click context menu
+    row.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      showContextMenu(e.clientX, e.clientY);
+    });
+
+    treeNode.appendChild(row);
+
+    // Children
+    if (node.type === 'folder' && node.children) {
+      var childContainer = document.createElement('div');
+      childContainer.className = 'tree-children' + (node.expanded ? '' : ' collapsed');
+      renderTree(node.children, childContainer, depth + 1);
+      treeNode.appendChild(childContainer);
+    }
+
+    container.appendChild(treeNode);
+  });
+}
+
+function rebuildTree() {
+  var tree = document.getElementById('docTree');
+  tree.innerHTML = '';
+  renderTree(treeData, tree, 0);
+  addDragVisualState();
+}
+
+// ===== Drag Visual State =====
+function addDragVisualState() {
+  var allRows = document.querySelectorAll('.tree-node-row');
+  // Add drag visual to "Docker部署指南.md" (id d3) - show it as slightly elevated
+  // and add a drop indicator after "数据库设计规范.md" (id d2)
+  allRows.forEach(function(row) {
+    if (row.getAttribute('data-id') === 'd3') {
+      row.classList.add('dragging');
+    }
+  });
+
+  // Find d2 row and insert drop indicator after it
+  allRows.forEach(function(row) {
+    if (row.getAttribute('data-id') === 'd2') {
+      var indicator = document.createElement('div');
+      indicator.className = 'drop-indicator';
+      row.parentNode.insertBefore(indicator, row.nextSibling);
+    }
+  });
+}
+
+// ===== Content Rendering =====
+function findNode(id, nodes) {
+  for (var i = 0; i < nodes.length; i++) {
+    if (nodes[i].id === id) return nodes[i];
+    if (nodes[i].children) {
+      var found = findNode(id, nodes[i].children);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function renderContent(node) {
+  var area = document.getElementById('contentArea');
+  if (!node) { renderOverview(); return; }
+
+  if (node.type === 'folder') {
+    renderFolderView(node);
+  } else {
+    renderDocPreview(node);
+  }
+}
+
+function renderOverview() {
+  var area = document.getElementById('contentArea');
+  var totalDocs = 13;
+  var completedDocs = 8;
+  var processingDocs = 2;
+  var failedDocs = 1;
+
+  area.innerHTML =
+    '<div class="breadcrumb"><span>产品技术文档库</span><span class="sep">/</span><span>概览</span></div>' +
+    '<h2 style="font-size:18px;font-weight:700;margin-bottom:20px;">知识库概览</h2>' +
+    '<div class="stats-grid">' +
+      '<div class="stat-card"><div class="stat-icon total"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="stat-info"><h3>' + totalDocs + '</h3><p>总文档数</p></div></div>' +
+      '<div class="stat-card"><div class="stat-icon done"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="stat-info"><h3>' + completedDocs + '</h3><p>已完成</p></div></div>' +
+      '<div class="stat-card"><div class="stat-icon progress"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="stat-info"><h3>' + processingDocs + '</h3><p>处理中</p></div></div>' +
+      '<div class="stat-card"><div class="stat-icon error"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div class="stat-info"><h3>' + failedDocs + '</h3><p>处理失败</p></div></div>' +
+    '</div>' +
+    '<h3 class="section-title">最近更新</h3>' +
+    '<div class="activity-list">' +
+      '<div class="activity-item"><span class="activity-dot completed"></span><span class="activity-text">微服务架构设计.md 处理完成</span><span class="activity-time">10 分钟前</span></div>' +
+      '<div class="activity-item"><span class="activity-dot processing"></span><span class="activity-text">K8s配置说明.md 正在处理中</span><span class="activity-time">25 分钟前</span></div>' +
+      '<div class="activity-item"><span class="activity-dot completed"></span><span class="activity-text">Docker部署指南.md 处理完成</span><span class="activity-time">1 小时前</span></div>' +
+      '<div class="activity-item"><span class="activity-dot failed"></span><span class="activity-text">安全策略.md 处理失败，请检查文档格式</span><span class="activity-time">2 小时前</span></div>' +
+      '<div class="activity-item"><span class="activity-dot completed"></span><span class="activity-text">CI-CD流水线.md 处理完成</span><span class="activity-time">3 小时前</span></div>' +
+    '</div>';
+}
+
+function renderFolderView(node) {
+  var area = document.getElementById('contentArea');
+  var breadcrumb = '<div class="breadcrumb"><span>产品技术文档库</span><span class="sep">/</span><span>' + node.name + '</span></div>';
+
+  var html = breadcrumb + '<h2 style="font-size:18px;font-weight:700;margin-bottom:20px;">' + node.name + '</h2>';
+  html += '<div class="folder-grid">';
+
+  if (node.children) {
+    node.children.forEach(function(child) {
+      var iconClass = child.type === 'folder' ? 'folder' : 'file';
+      var iconSvg = child.type === 'folder' ? icons.folder : icons.fileMd;
+      var sub = child.type === 'folder' ? (child.children ? child.children.length + ' 个项目' : '0 个项目') : (child.status === 'completed' ? '已完成' : child.status === 'processing' ? '处理中' : '失败');
+      html += '<div class="folder-card" data-id="' + child.id + '">' +
+        '<div class="folder-card-icon ' + iconClass + '">' + iconSvg + '</div>' +
+        '<h4>' + child.name + '</h4>' +
+        '<p>' + sub + '</p>' +
+      '</div>';
+    });
+  }
+
+  html += '</div>';
+  area.innerHTML = html;
+
+  // Attach click events to cards
+  area.querySelectorAll('.folder-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var childNode = findNode(card.getAttribute('data-id'), treeData);
+      if (childNode) {
+        selectedId = childNode.id;
+        rebuildTree();
+        renderContent(childNode);
+      }
+    });
+  });
+}
+
+function renderDocPreview(node) {
+  var area = document.getElementById('contentArea');
+  var doc = docContents[node.id];
+
+  if (!doc) {
+    // Fallback for docs without content
+    doc = {
+      title: node.name.replace('.md', ''),
+      version: 'v1.0.0',
+      size: '8.0 KB',
+      chunks: 5,
+      status: node.status || 'completed',
+      tags: ['文档'],
+      content: '<p>文档内容加载中...</p>'
+    };
+  }
+
+  var statusLabel = doc.status === 'completed' ? '已完成' : doc.status === 'processing' ? '处理中' : '失败';
+  var tagsHtml = doc.tags.map(function(t) { return '<span class="doc-tag">' + t + '</span>'; }).join('');
+
+  var breadcrumb = '<div class="breadcrumb"><span>产品技术文档库</span>';
+  // Find parent folder
+  var parentFolder = findParentFolder(node.id, treeData);
+  if (parentFolder) {
+    breadcrumb += '<span class="sep">/</span><span>' + parentFolder.name + '</span>';
+  }
+  breadcrumb += '<span class="sep">/</span><span>' + doc.title + '</span></div>';
+
+  area.innerHTML = breadcrumb +
+    '<div data-component="doc-preview">' +
+      '<div class="doc-preview-header">' +
+        '<h2>' + doc.title + '</h2>' +
+        '<div class="doc-meta-bar">' +
+          '<div class="doc-meta-item"><span class="meta-label">版本</span> ' + doc.version + '</div>' +
+          '<div class="doc-meta-item"><span class="meta-label">大小</span> ' + doc.size + '</div>' +
+          '<div class="doc-meta-item"><span class="meta-label">分块数</span> ' + doc.chunks + '</div>' +
+          '<div class="doc-meta-item"><span class="doc-status-badge ' + doc.status + '">' +
+            '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>' +
+            statusLabel + '</span></div>' +
+          '<div class="doc-meta-item">' + tagsHtml + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="doc-preview-body">' + doc.content + '</div>' +
+    '</div>';
+}
+
+function findParentFolder(nodeId, nodes, parent) {
+  for (var i = 0; i < nodes.length; i++) {
+    if (nodes[i].id === nodeId) return parent || null;
+    if (nodes[i].children) {
+      var found = findParentFolder(nodeId, nodes[i].children, nodes[i]);
+      if (found !== undefined) return found;
+    }
+  }
+  return undefined;
+}
+
+// ===== Context Menu =====
+function showContextMenu(x, y) {
+  var menu = document.getElementById('contextMenu');
+  menu.classList.add('visible');
+  menu.style.left = x + 'px';
+  menu.style.top = y + 'px';
+
+  // Keep menu in viewport
+  var rect = menu.getBoundingClientRect();
+  if (rect.right > window.innerWidth) {
+    menu.style.left = (x - rect.width) + 'px';
+  }
+  if (rect.bottom > window.innerHeight) {
+    menu.style.top = (y - rect.height) + 'px';
+  }
+}
+
+function hideContextMenu() {
+  document.getElementById('contextMenu').classList.remove('visible');
+}
+
+document.addEventListener('click', function() { hideContextMenu(); });
+document.addEventListener('contextmenu', function(e) {
+  // Only show custom menu on tree nodes
+  if (!e.target.closest('.tree-node-row')) {
+    hideContextMenu();
+  }
+});
+
+document.querySelectorAll('.ctx-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    hideContextMenu();
+  });
+});
+
+// ===== Theme Toggle =====
+document.getElementById('themeToggle').addEventListener('click', function() {
+  var html = document.documentElement;
+  var current = html.getAttribute('data-theme');
+  var next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+
+  var icon = document.getElementById('themeIcon');
+  if (next === 'dark') {
+    icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+  } else {
+    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  }
+});
+
+// ===== Sidebar Toggle =====
+document.getElementById('sidebarToggle').addEventListener('click', function() {
+  sidebarCollapsed = !sidebarCollapsed;
+  var sidebar = document.getElementById('sidebar');
+  var btn = document.getElementById('sidebarToggle');
+
+  if (sidebarCollapsed) {
+    sidebar.classList.add('collapsed');
+    btn.classList.add('collapsed');
+    btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  } else {
+    sidebar.classList.remove('collapsed');
+    btn.classList.remove('collapsed');
+    btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  }
+});
+
+// ===== View Toggle =====
+document.getElementById('treeViewBtn').addEventListener('click', function() {
+  this.classList.add('active');
+  document.getElementById('listViewBtn').classList.remove('active');
+});
+
+document.getElementById('listViewBtn').addEventListener('click', function() {
+  this.classList.add('active');
+  document.getElementById('treeViewBtn').classList.remove('active');
+});
+
+// ===== Tree Filter =====
+document.getElementById('treeFilter').addEventListener('input', function() {
+  var query = this.value.toLowerCase();
+  var allNodes = document.querySelectorAll('.tree-node');
+  if (!query) {
+    allNodes.forEach(function(n) { n.style.display = ''; });
+    return;
+  }
+  allNodes.forEach(function(n) {
+    var row = n.querySelector('.tree-node-row');
+    var name = row.getAttribute('data-name').toLowerCase();
+    var hasMatch = name.indexOf(query) !== -1;
+    // Also check children
+    var childLabels = n.querySelectorAll('.tree-node-row');
+    childLabels.forEach(function(r) {
+      if (r.getAttribute('data-name').toLowerCase().indexOf(query) !== -1) hasMatch = true;
+    });
+    n.style.display = hasMatch ? '' : 'none';
+  });
+});
+
+// ===== Init =====
+rebuildTree();
+renderOverview();
+</script>
+</body>
+</html>

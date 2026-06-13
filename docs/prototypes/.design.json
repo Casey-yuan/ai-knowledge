@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-13T10:30:00.000Z",
+  "brief": {
+    "artifactType": "prototype",
+    "targetPlatform": [
+      "desktop",
+      "web"
+    ],
+    "audience": "product manager / developer",
+    "businessGoal": "为「知源」AI 知识库补齐 P0 级功能原型：标签系统、文档目录树、文档版本对比，同时标注查询改写和 Rerank 的接通方案。所有原型需与现有 Vue 3 + Element Plus 界面风格完全一致。",
+    "componentLibrary": "element-plus",
+    "existingProject": "知源 AI Knowledge Base — Vue 3 + Element Plus + NestJS + PostgreSQL/pgvector，已有完善的 CSS 自定义属性设计令牌体系（design-tokens.css）",
+    "features": [
+      "标签系统：标签 CRUD、文档打标签、标签筛选、标签云",
+      "文档目录树：树形目录结构、拖拽排序、嵌套层级",
+      "查询改写接通：后端已有 LlmService.rewriteQuery，需在 Chat 流程中调用（无新 UI，在检索设置中增加开关）",
+      "Rerank 重排序接通：后端已有 rerank.service.ts，需在检索流水线中接入（在检索测试页展示 rerank 前后排序对比）",
+      "文档版本对比：Diff View 可视化，基于 DocumentVersion 模型"
+    ],
+    "outputTarget": "html",
+    "platform": "desktop web",
+    "style": "严格沿用项目现有的 CSS 自定义属性设计令牌体系（--bg, --surface, --fg, --primary, --border, --radius 等），确保原型可直接指导 Vue 开发"
+  },
+  "output": {
+    "target": "html",
+    "componentLibrary": "element-plus",
+    "previewStrategy": "Generate Canvas HTML workspace files after generation tools are enabled."
+  },
+  "resources": {
+    "skill": {
+      "id": "docs-page",
+      "title": "docs-page",
+      "rationale": "mode matches prototype; trigger: 文档; platform: desktop",
+      "alternatives": [
+        "web-prototype",
+        "dashboard"
+      ]
+    },
+    "styleReference": {
+      "primary": "stripe",
+      "inspiration": [
+        "supabase",
+        "vercel"
+      ],
+      "rationale": "Developer product fit; clean UI patterns consistent with existing knowledge base style"
+    },
+    "requiredReads": [
+      {
+        "kind": "skill",
+        "id": "docs-page",
+        "reason": "Selected Canvas skill checklist."
+      },
+      {
+        "kind": "design-system",
+        "id": "stripe",
+        "reason": "Primary style reference."
+      },
+      {
+        "kind": "craft",
+        "id": "anti-ai-slop",
+        "reason": "Baseline AI-slop guardrail."
+      },
+      {
+        "kind": "craft",
+        "id": "typography",
+        "reason": "Baseline typography quality."
+      },
+      {
+        "kind": "craft",
+        "id": "color",
+        "reason": "Baseline color quality."
+      },
+      {
+        "kind": "protocol",
+        "id": "design-mode-runtime",
+        "reason": "Design Plan Mode contract."
+      },
+      {
+        "kind": "protocol",
+        "id": "skill-protocol",
+        "reason": "Skill metadata contract."
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "prototype-tags.html",
+      "action": "create",
+      "purpose": "标签系统完整原型：包含标签管理页面（标签列表/创建/编辑/删除）、文档打标签交互（在文档列表中内联标签选择器）、标签筛选面板、标签云展示",
+      "requirements": [
+        "顶部导航栏与项目现有风格一致（品牌名、搜索、主题切换、用户头像）",
+        "标签管理页：左侧标签列表（含文档数量统计），右侧标签详情与关联文档",
+        "创建/编辑标签对话框：名称输入、颜色选择（预设 12 色）",
+        "文档打标签交互：文档行内显示已有标签 chip，点击添加按钮弹出标签选择器（支持搜索和新建）",
+        "标签筛选：在文档列表顶部增加标签筛选条，支持多选标签筛选",
+        "标签云：在知识库详情页或探索页展示热门标签云，字号按文档数量映射",
+        "使用项目现有 CSS 变量（--bg, --surface, --primary, --border, --radius 等）",
+        "包含亮/暗主题切换按钮",
+        "所有文本为中文"
+      ]
+    },
+    {
+      "path": "prototype-doc-tree.html",
+      "action": "create",
+      "purpose": "文档目录树原型：在知识库详情页增加左侧树形目录导航，支持层级嵌套、拖拽排序、展开折叠，替代当前扁平列表",
+      "requirements": [
+        "左右分栏布局：左侧目录树（可收缩，宽度 260px），右侧文档内容区",
+        "目录树支持无限层级嵌套，每个节点可展开/折叠",
+        "树节点包含：文档图标（区分 MD/FILE）、文档标题、状态指示点（处理中/已完成/失败）",
+        "拖拽排序视觉反馈：拖拽时显示插入位置指示线",
+        "右键菜单：新建文档、新建文件夹、重命名、移动、删除",
+        "顶部工具栏：新建文档按钮、切换列表/树形视图按钮、搜索过滤",
+        "选中树节点时右侧展示文档预览或文档列表",
+        "文件夹节点用不同图标区分，支持文件夹嵌套",
+        "使用项目现有 CSS 变量和 Element Plus Tree 组件风格",
+        "包含亮/暗主题切换",
+        "所有文本为中文"
+      ]
+    },
+    {
+      "path": "prototype-version-diff.html",
+      "action": "create",
+      "purpose": "文档版本对比原型：在文档详情页增加版本历史面板和 Diff 可视化视图",
+      "requirements": [
+        "文档详情页增加「版本历史」Tab 或侧边抽屉入口",
+        "版本历史列表：版本号、修改时间、修改人、变更摘要，当前版本高亮",
+        "Diff 视图：左右分栏对比（旧版本 vs 新版本），仿 VS Code diff 风格",
+        "新增内容绿色高亮（--success-light 背景），删除内容红色高亮（--danger-light 背景），修改内容黄色标记",
+        "支持行级 diff 和块级 diff 两种显示模式切换",
+        "顶部版本选择器：两个下拉框分别选择要对比的版本号",
+        "代码/Markdown 内容用等宽字体显示，带行号",
+        "支持一键回滚到指定版本的确认对话框",
+        "使用项目现有 CSS 变量",
+        "包含亮/暗主题切换",
+        "所有文本为中文"
+      ]
+    },
+    {
+      "path": "prototype-retrieval-enhanced.html",
+      "action": "create",
+      "purpose": "检索增强原型：在检索测试页增加查询改写开关和 Rerank 重排序前后对比展示",
+      "requirements": [
+        "在现有检索测试页左侧配置面板增加：查询改写开关（Toggle）、Rerank 开关（Toggle）",
+        "开启查询改写时，在结果区顶部显示「原始查询 → 改写后查询」的对比卡片",
+        "开启 Rerank 时，结果区分为两栏：左侧为初始检索结果（带原始排序编号和分数），右侧为 Rerank 后结果（带新排序和 rerank 分数）",
+        "Rerank 对比用箭头连接同一结果在两个列表中的位置变化，高亮上升/下降",
+        "保留现有的统计栏（结果数、平均分、耗时），额外增加 rerank 耗时",
+        "使用项目现有检索测试页的布局风格和数据展示方式",
+        "使用项目现有 CSS 变量",
+        "包含亮/暗主题切换",
+        "所有文本为中文"
+      ]
+    }
+  ],
+  "designDirection": {
+    "fidelity": "high-fidelity",
+    "styleSource": "existing-project-tokens",
+    "visualTone": [
+      "clean",
+      "professional",
+      "consistent-with-element-plus"
+    ],
+    "notes": "严格复用项目现有 design-tokens.css 中的 CSS 变量体系。不引入新的品牌色或字体。原型中模拟 Element Plus 组件样式（el-button, el-tag, el-dialog, el-tree, el-table 等），确保开发者可以直接参考实现。"
+  },
+  "structure": {
+    "screens": [
+      "标签管理页（全局标签 CRUD + 标签云）",
+      "文档列表页增强（内联标签显示 + 标签筛选 + 打标签交互）",
+      "知识库详情页增强（左侧目录树 + 右侧文档区）",
+      "文档详情页增强（版本历史面板 + Diff 视图）",
+      "检索测试页增强（查询改写展示 + Rerank 对比）"
+    ],
+    "sections": [
+      "统一顶部导航栏",
+      "标签管理：标签列表 + 标签详情 + 创建对话框 + 标签云",
+      "文档目录树：树形导航 + 拖拽状态 + 右键菜单 + 内容区",
+      "版本对比：版本列表 + 版本选择器 + Diff 视图 + 回滚确认",
+      "检索增强：配置面板 + 查询改写卡片 + Rerank 双栏对比"
+    ]
+  },
+  "interaction": {
+    "primaryFlow": "用户从知识库进入 → 管理标签 → 给文档打标签 → 通过目录树浏览文档 → 查看文档版本历史并对比差异 → 在检索测试中验证查询改写和 Rerank 效果",
+    "states": [
+      "标签空状态（无标签时引导创建）",
+      "标签选择器展开/收起",
+      "目录树节点展开/折叠",
+      "目录树拖拽中（插入指示线）",
+      "Diff 视图加载中",
+      "Diff 行级/块级模式切换",
+      "Rerank 前后排序变化动画",
+      "亮/暗主题切换"
+    ]
+  },
+  "quality": {
+    "responsive": false,
+    "accessibility": true,
+    "lintRequired": true,
+    "acceptanceCriteria": [
+      "所有原型使用项目现有 CSS 变量，不引入新的颜色令牌",
+      "Element Plus 组件样式模拟准确（按钮、标签、对话框、树形控件等）",
+      "亮/暗主题切换功能正常",
+      "所有文本为中文，无占位英文",
+      "交互状态完整（空状态、加载、hover、选中）",
+      "设计质量检查 P0=0，所有 P1 问题已修复或显式豁免"
+    ]
+  },
+  "risks": [
+    {
+      "risk": "HTML 原型中 Element Plus 组件模拟可能与实际 Vue 组件有细微差异",
+      "mitigation": "使用项目实际 CSS 变量和 Element Plus 的默认样式参数，确保视觉一致"
+    },
+    {
+      "risk": "Diff 视图在纯 HTML 中实现行级高亮较复杂",
+      "mitigation": "使用 CSS 样式模拟 Diff 效果，不依赖外部 diff 库"
+    }
+  ],
+  "abstract": "本计划为「知源」AI 知识库生成 P0 功能的 4 份高保真 HTML 原型，覆盖标签系统（管理+打标签+筛选+标签云）、文档目录树（树形导航+拖拽+右键菜单）、文档版本对比（版本列表+Diff 可视化）和检索增强（查询改写+Rerank 对比）。所有原型严格复用项目现有的 CSS 变量设计令牌体系和 Element Plus 组件风格，包含亮暗主题切换，面向产品经理评审和开发者实现参考。请确认功能范围和交互细节是否符合预期。"
+}

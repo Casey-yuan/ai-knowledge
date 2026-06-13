@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知源 - 标签管理</title>
+<style>
+:root {
+  --seed-primary: #3b5ccc;
+  --seed-accent: #5b6ef5;
+  --seed-bg: #f5f7fa;
+  --seed-fg: #1a1f36;
+  --seed-surface: #fff;
+  --seed-radius: 8;
+  --seed-success: #22a06b;
+  --seed-warn: #e68a00;
+  --seed-danger: #e34850;
+  --seed-muted: #6b7a90;
+  --seed-border: #e2e8f0;
+  --seed-fg2-light: #3d4f65;
+  --seed-fg2-dark: #a8b4c4;
+  --seed-primary-hover-light: #2d4db8;
+  --seed-primary-hover-dark: #7b99ff;
+  --seed-accent-dark: #7c8fff;
+  --seed-success-dark: #36b37e;
+  --seed-warn-dark: #f0a830;
+  --seed-danger-dark: #f06070;
+  --seed-black: #000000;
+  --fg-on-primary: #ffffff;
+  --overlay-bg: rgba(0,0,0,0.5);
+  --shadow-sm-light: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md-light: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg-light: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-sm-dark: 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md-dark: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg-dark: 0 8px 24px rgba(0,0,0,0.4);
+  --seed-border-dark: rgba(255,255,255,0.08);
+  --seed-border-subtle-dark: rgba(255,255,255,0.05);
+  --tag-color-1: #3b5ccc;
+  --tag-color-2: #e34850;
+  --tag-color-3: #22a06b;
+  --tag-color-4: #e68a00;
+  --tag-color-5: #5b6ef5;
+  --tag-color-6: #ec4899;
+  --tag-color-7: #06b6d4;
+  --tag-color-8: #84cc16;
+  --tag-color-9: #f59e0b;
+  --tag-color-10: #4f8cf7;
+  --tag-color-11: #14b8a6;
+  --tag-color-12: #ef4444;
+}
+
+[data-theme="light"] {
+  --bg: var(--seed-bg);
+  --bg2: color-mix(in srgb, var(--seed-fg) 5%, var(--seed-bg));
+  --surface: var(--seed-surface);
+  --surface-hover: color-mix(in srgb, var(--seed-fg) 4%, var(--seed-surface));
+  --surface-raised: var(--seed-surface);
+  --fg: var(--seed-fg);
+  --fg2: var(--seed-fg2-light);
+  --fg-muted: var(--seed-muted);
+  --fg-subtle: color-mix(in srgb, var(--seed-muted) 70%, var(--seed-bg));
+  --border: var(--seed-border);
+  --border-subtle: color-mix(in srgb, var(--seed-border) 60%, var(--seed-bg));
+  --primary: var(--seed-primary);
+  --primary-light: color-mix(in srgb, var(--seed-primary) 12%, var(--seed-surface));
+  --primary-hover: var(--seed-primary-hover-light);
+  --accent: var(--seed-accent);
+  --success: var(--seed-success);
+  --success-light: color-mix(in srgb, var(--seed-success) 12%, var(--seed-surface));
+  --warn: var(--seed-warn);
+  --warn-light: color-mix(in srgb, var(--seed-warn) 12%, var(--seed-surface));
+  --danger: var(--seed-danger);
+  --danger-light: color-mix(in srgb, var(--seed-danger) 12%, var(--seed-surface));
+  --shadow-sm: var(--shadow-sm-light);
+  --shadow-md: var(--shadow-md-light);
+  --shadow-lg: var(--shadow-lg-light);
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+[data-theme="dark"] {
+  --bg: color-mix(in srgb, var(--seed-bg) 6%, var(--seed-black));
+  --bg2: color-mix(in srgb, var(--seed-bg) 9%, var(--seed-black));
+  --surface: color-mix(in srgb, var(--seed-bg) 11%, var(--seed-black));
+  --surface-hover: color-mix(in srgb, var(--seed-bg) 15%, var(--seed-black));
+  --surface-raised: color-mix(in srgb, var(--seed-bg) 14%, var(--seed-black));
+  --fg: color-mix(in srgb, var(--seed-fg) 10%, var(--seed-surface));
+  --fg2: var(--seed-fg2-dark);
+  --fg-muted: var(--seed-muted);
+  --fg-subtle: color-mix(in srgb, var(--seed-muted) 65%, var(--seed-black));
+  --border: var(--seed-border-dark);
+  --border-subtle: var(--seed-border-subtle-dark);
+  --primary: color-mix(in srgb, var(--seed-primary) 75%, var(--seed-surface));
+  --primary-light: color-mix(in srgb, var(--primary) 12%, var(--surface));
+  --primary-hover: var(--seed-primary-hover-dark);
+  --accent: var(--seed-accent-dark);
+  --success: var(--seed-success-dark);
+  --success-light: color-mix(in srgb, var(--success) 12%, var(--surface));
+  --warn: var(--seed-warn-dark);
+  --warn-light: color-mix(in srgb, var(--warn) 12%, var(--surface));
+  --danger: var(--seed-danger-dark);
+  --danger-light: color-mix(in srgb, var(--danger) 12%, var(--surface));
+  --shadow-sm: var(--shadow-sm-dark);
+  --shadow-md: var(--shadow-md-dark);
+  --shadow-lg: var(--shadow-lg-dark);
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Top Navigation */
+.top-nav {
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-search {
+  flex: 1;
+  max-width: 480px;
+  margin: 0 48px;
+  position: relative;
+}
+
+.nav-search input {
+  width: 100%;
+  height: 36px;
+  padding: 0 16px 0 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.nav-search input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.nav-search svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--fg-muted);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--bg);
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-muted);
+  transition: all 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--surface-hover);
+  color: var(--fg);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-on-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background: var(--surface-hover);
+  color: var(--fg);
+}
+
+.tab.active {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* Main Content */
+.main-content {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* Tag Management View */
+.tag-management {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  height: calc(100vh - 180px);
+}
+
+.tag-list-panel {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 14px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.tag-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.tag-item {
+  padding: 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+}
+
+.tag-item:hover {
+  background: var(--surface-hover);
+}
+
+.tag-item.selected {
+  background: var(--primary-light);
+}
+
+.tag-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tag-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tag-count {
+  background: var(--bg2);
+  color: var(--fg-muted);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-new-tag {
+  margin: 12px;
+  padding: 10px;
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-new-tag:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+/* Tag Detail Panel */
+.tag-detail-panel {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-title h2 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--fg-on-primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+}
+
+.btn-danger {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: var(--danger);
+  color: var(--fg-on-primary);
+}
+
+.associated-docs h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doc-card {
+  padding: 16px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.doc-card:hover {
+  background: var(--surface-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.doc-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.doc-info {
+  flex: 1;
+}
+
+.doc-title {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.doc-meta {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+/* Document List View */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.stat-trend {
+  font-size: 12px;
+  color: var(--success);
+  margin-top: 4px;
+}
+
+.tag-filter-bar {
+  background: var(--surface);
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.filter-label {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.tag-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag-chip {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.tag-chip.active {
+  border-color: currentColor;
+  box-shadow: var(--shadow-md);
+}
+
+.document-table {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.table-header {
+  padding: 16px 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 100px;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-muted);
+}
+
+.table-row {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 100px;
+  gap: 16px;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.table-row:hover {
+  background: var(--surface-hover);
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.doc-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doc-cell-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.doc-cell-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tags-cell {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.mini-tag {
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.add-tag-btn {
+  width: 24px;
+  height: 24px;
+  border: 1px dashed var(--border);
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-muted);
+  transition: all 0.2s;
+}
+
+.add-tag-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-published {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.status-draft {
+  background: var(--warn-light);
+  color: var(--warn);
+}
+
+.status-archived {
+  background: var(--bg2);
+  color: var(--fg-muted);
+}
+
+.meta-cell {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+/* Tag Cloud View */
+.tag-cloud-container {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 48px;
+  margin-bottom: 24px;
+  min-height: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.cloud-tag {
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-weight: 600;
+}
+
+.cloud-tag:hover {
+  transform: scale(1.15);
+  box-shadow: var(--shadow-md);
+}
+
+.tag-chart {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 32px;
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.chart-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chart-bar-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 60px;
+  gap: 16px;
+  align-items: center;
+}
+
+.bar-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.bar-track {
+  height: 32px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  overflow: visible;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: var(--radius);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  color: var(--fg-on-primary);
+  font-size: 0;
+  font-weight: 600;
+}
+
+.bar-fill svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.bar-fill svg text {
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--fg-on-primary);
+  dominant-baseline: central;
+}
+
+.bar-value {
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-bg);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 24px;
+  width: 90%;
+  max-width: 480px;
+}
+
+.modal-header {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 14px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.color-picker {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.color-option {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: var(--fg);
+  box-shadow: var(--shadow-md);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Dropdown */
+.dropdown {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  min-width: 240px;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 500;
+  display: none;
+}
+
+.dropdown.active {
+  display: block;
+}
+
+.dropdown-search {
+  width: 100%;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.dropdown-search:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+.dropdown-item:hover {
+  background: var(--surface-hover);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fg-muted);
+}
+</style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<nav class="top-nav" data-component="navigation">
+  <div class="brand">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2L2 7v10l10 5 10-5V7L12 2z" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M12 7v10M7 9.5l5 2.5 5-2.5" stroke="currentColor" stroke-width="2"/>
+    </svg>
+    知源
+  </div>
+  
+  <div class="nav-search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/>
+      <path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" placeholder="搜索文档、标签...">
+  </div>
+  
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+    <div class="avatar">李</div>
+  </div>
+</nav>
+
+<!-- Tabs -->
+<div class="tabs" data-component="tabs">
+  <button class="tab active" onclick="switchTab('management')">标签管理</button>
+  <button class="tab" onclick="switchTab('documents')">文档列表</button>
+  <button class="tab" onclick="switchTab('cloud')">标签云</button>
+</div>
+
+<!-- Main Content -->
+<main class="main-content">
+  
+  <!-- Tag Management View -->
+  <div id="view-management" class="view active" data-component="tag-management">
+    <div class="tag-management">
+      <div class="tag-list-panel">
+        <div class="panel-header">
+          <div class="panel-title">所有标签</div>
+          <input type="text" class="search-input" placeholder="搜索标签..." oninput="filterTagList(this.value)">
+        </div>
+        <div class="tag-list" id="tagList"></div>
+        <button class="btn-new-tag" onclick="openCreateTagModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          新建标签
+        </button>
+      </div>
+      
+      <div class="tag-detail-panel" id="tagDetail">
+        <div class="detail-header">
+          <div class="detail-title">
+            <div class="tag-color-dot" id="detailDot" style="width:20px;height:20px"></div>
+            <h2 id="detailName">技术文档</h2>
+          </div>
+          <div class="detail-actions">
+            <button class="btn btn-secondary" onclick="openEditTagModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              编辑
+            </button>
+            <button class="btn btn-danger" onclick="openDeleteModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              删除
+            </button>
+          </div>
+        </div>
+        <div class="associated-docs">
+          <h3>关联文档 (<span id="docCount">5</span>)</h3>
+          <div class="doc-list" id="associatedDocs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Document List View -->
+  <div id="view-documents" class="view" data-component="document-list">
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label">总文档数</div>
+        <div class="stat-value">128</div>
+        <div class="stat-trend">↑ 12% 本月</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">标签总数</div>
+        <div class="stat-value">8</div>
+        <div class="stat-trend">↑ 2 新增</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">本周更新</div>
+        <div class="stat-value">24</div>
+        <div class="stat-trend">↑ 8% 较上周</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">活跃用户</div>
+        <div class="stat-value">16</div>
+        <div class="stat-trend">↑ 3 新增</div>
+      </div>
+    </div>
+    
+    <div class="tag-filter-bar">
+      <div class="filter-label">按标签筛选</div>
+      <div class="tag-chips" id="filterChips"></div>
+    </div>
+    
+    <div class="document-table">
+      <div class="table-header">
+        <div>文档</div>
+        <div>标签</div>
+        <div>状态</div>
+        <div>更新时间</div>
+      </div>
+      <div id="documentRows"></div>
+    </div>
+  </div>
+  
+  <!-- Tag Cloud View -->
+  <div id="view-cloud" class="view" data-component="tag-cloud">
+    <div class="tag-cloud-container" id="tagCloud"></div>
+    <div class="tag-chart">
+      <div class="chart-title">热门标签 Top 5</div>
+      <div class="chart-bars" id="chartBars"></div>
+    </div>
+  </div>
+  
+</main>
+
+<!-- Create/Edit Tag Modal -->
+<div class="modal-overlay" id="tagModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header" id="modalTitle">新建标签</div>
+    <div class="form-group">
+      <label class="form-label">标签名称</label>
+      <input type="text" class="form-input" id="tagNameInput" placeholder="输入标签名称">
+    </div>
+    <div class="form-group">
+      <label class="form-label">选择颜色</label>
+      <div class="color-picker" id="colorPicker"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveTag()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteModal" onclick="if(event.target===this)closeDeleteModal()">
+  <div class="modal">
+    <div class="modal-header">确认删除</div>
+    <p style="margin-bottom:20px;color:var(--fg2)">此操作将删除标签"<span id="deleteTagName"></span>"及其所有关联。确定继续吗？</p>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeDeleteModal()">取消</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tag Selector Dropdown -->
+<div class="dropdown" id="tagDropdown">
+  <input type="text" class="dropdown-search" placeholder="搜索标签..." oninput="filterDropdownTags(this.value)">
+  <div id="dropdownItems"></div>
+  <div class="dropdown-divider"></div>
+  <div class="dropdown-item" onclick="openCreateTagModal()" style="color:var(--primary)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 5v14M5 12h14"/>
+    </svg>
+    新建标签
+  </div>
+</div>
+
+<script>
+// Data
+const colorPalette = [
+  'var(--tag-color-1)', 'var(--tag-color-2)', 'var(--tag-color-3)', 'var(--tag-color-4)', 
+  'var(--tag-color-5)', 'var(--tag-color-6)', 'var(--tag-color-7)', 'var(--tag-color-8)',
+  'var(--tag-color-9)', 'var(--tag-color-10)', 'var(--tag-color-11)', 'var(--tag-color-12)'
+];
+
+let tags = [
+  { id: 1, name: '技术文档', color: 'var(--tag-color-1)', count: 42 },
+  { id: 2, name: '产品需求', color: 'var(--tag-color-2)', count: 35 },
+  { id: 3, name: '用户手册', color: 'var(--tag-color-3)', count: 28 },
+  { id: 4, name: 'FAQ', color: 'var(--tag-color-4)', count: 24 },
+  { id: 5, name: 'API参考', color: 'var(--tag-color-5)', count: 19 },
+  { id: 6, name: '架构设计', color: 'var(--tag-color-7)', count: 15 },
+  { id: 7, name: '数据分析', color: 'var(--tag-color-6)', count: 12 },
+  { id: 8, name: '运维手册', color: 'var(--tag-color-8)', count: 8 }
+];
+
+const documents = [
+  { 
+    id: 1, 
+    title: '微服务架构设计指南', 
+    type: 'pdf',
+    tags: [1, 6], 
+    status: 'published',
+    date: '2024-01-15'
+  },
+  { 
+    id: 2, 
+    title: 'REST API 接口规范 v2.0', 
+    type: 'doc',
+    tags: [1, 5], 
+    status: 'published',
+    date: '2024-01-12'
+  },
+  { 
+    id: 3, 
+    title: '产品需求文档 - 用户中心模块', 
+    type: 'doc',
+    tags: [2], 
+    status: 'draft',
+    date: '2024-01-10'
+  },
+  { 
+    id: 4, 
+    title: '系统运维操作手册', 
+    type: 'pdf',
+    tags: [8, 1], 
+    status: 'published',
+    date: '2024-01-08'
+  },
+  { 
+    id: 5, 
+    title: '常见问题解答汇总', 
+    type: 'doc',
+    tags: [4, 3], 
+    status: 'archived',
+    date: '2024-01-05'
+  }
+];
+
+let selectedTagId = 1;
+let editingTagId = null;
+let selectedColor = colorPalette[0];
+let activeFilters = [];
+
+// Helper to resolve CSS variable color references to computed values
+const _cs = getComputedStyle(document.documentElement);
+function resolvedColor(c) {
+  if (c.startsWith('var(')) {
+    const v = c.slice(4, -1).trim();
+    return _cs.getPropertyValue(v).trim();
+  }
+  return c;
+}
+
+// Theme Toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  
+  document.querySelector('.sun-icon').style.display = next === 'light' ? 'block' : 'none';
+  document.querySelector('.moon-icon').style.display = next === 'dark' ? 'block' : 'none';
+}
+
+// Tab Switching
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  
+  event.currentTarget.classList.add('active');
+  document.getElementById(`view-${tab === 'management' ? 'management' : tab === 'documents' ? 'documents' : 'cloud'}`).classList.add('active');
+  
+  if (tab === 'cloud') renderTagCloud();
+}
+
+// Filter Tag List
+function filterTagList(query) {
+  const list = document.getElementById('tagList');
+  const filtered = tags.filter(tag => tag.name.toLowerCase().includes(query.toLowerCase()));
+  list.innerHTML = filtered.map(tag => `
+    <div class="tag-item ${tag.id === selectedTagId ? 'selected' : ''}" onclick="selectTag(${tag.id})">
+      <div class="tag-color-dot" style="background:${tag.color}"></div>
+      <div class="tag-name">${tag.name}</div>
+      <div class="tag-count">${tag.count}</div>
+    </div>
+  `).join('');
+}
+
+// Render Tag List
+function renderTagList() {
+  const list = document.getElementById('tagList');
+  list.innerHTML = tags.map(tag => `
+    <div class="tag-item ${tag.id === selectedTagId ? 'selected' : ''}" onclick="selectTag(${tag.id})">
+      <div class="tag-color-dot" style="background:${tag.color}"></div>
+      <div class="tag-name">${tag.name}</div>
+      <div class="tag-count">${tag.count}</div>
+    </div>
+  `).join('');
+}
+
+// Select Tag
+function selectTag(id) {
+  selectedTagId = id;
+  renderTagList();
+  renderTagDetail();
+}
+
+// Render Tag Detail
+function renderTagDetail() {
+  const tag = tags.find(t => t.id === selectedTagId);
+  if (!tag) {
+    document.getElementById('detailDot').style.background = 'var(--fg-muted)';
+    document.getElementById('detailName').textContent = '未选择标签';
+    document.getElementById('docCount').textContent = '0';
+    document.getElementById('associatedDocs').innerHTML = '<p style="color:var(--fg-muted);text-align:center;padding:40px">请选择一个标签查看详情</p>';
+    return;
+  }
+  
+  document.getElementById('detailDot').style.background = tag.color;
+  document.getElementById('detailName').textContent = tag.name;
+  document.getElementById('docCount').textContent = tag.count;
+  
+  const docs = documents.filter(d => d.tags.includes(tag.id));
+  const docsList = document.getElementById('associatedDocs');
+  
+  if (docs.length === 0) {
+    docsList.innerHTML = '<p style="color:var(--fg-muted);text-align:center;padding:40px">暂无关联文档</p>';
+    return;
+  }
+  
+  docsList.innerHTML = docs.map(doc => `
+    <div class="doc-card">
+      <div class="doc-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+      </div>
+      <div class="doc-info">
+        <div class="doc-title">${doc.title}</div>
+        <div class="doc-meta">${doc.date} · ${doc.type.toUpperCase()}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Render Filter Chips
+function renderFilterChips() {
+  const chips = document.getElementById('filterChips');
+  chips.innerHTML = tags.map(tag => `
+    <div class="tag-chip ${activeFilters.includes(tag.id) ? 'active' : ''}" 
+         style="background:color-mix(in srgb, ${tag.color} 12%, transparent);color:${tag.color}" 
+         onclick="toggleFilter(${tag.id})">
+      <div class="tag-color-dot" style="background:${tag.color};width:8px;height:8px"></div>
+      ${tag.name}
+    </div>
+  `).join('');
+}
+
+// Toggle Filter
+function toggleFilter(id) {
+  const idx = activeFilters.indexOf(id);
+  if (idx > -1) activeFilters.splice(idx, 1);
+  else activeFilters.push(id);
+  renderFilterChips();
+  renderDocuments();
+}
+
+// Render Documents
+function renderDocuments() {
+  const rows = document.getElementById('documentRows');
+  const filtered = activeFilters.length > 0 
+    ? documents.filter(d => d.tags.some(t => activeFilters.includes(t)))
+    : documents;
+  
+  if (filtered.length === 0) {
+    rows.innerHTML = '<div style="padding:60px;text-align:center;color:var(--fg-muted)">暂无符合条件的文档</div>';
+    return;
+  }
+  
+  rows.innerHTML = filtered.map(doc => {
+    const docTags = doc.tags.map(tid => tags.find(t => t.id === tid)).filter(Boolean);
+    const statusClass = doc.status === 'published' ? 'status-published' : doc.status === 'draft' ? 'status-draft' : 'status-archived';
+    const statusText = doc.status === 'published' ? '已发布' : doc.status === 'draft' ? '草稿' : '已归档';
+    const iconColor = doc.type === 'pdf' ? 'var(--danger)' : 'var(--primary)';
+    
+    return `
+      <div class="table-row">
+        <div class="doc-cell">
+          <div class="doc-cell-icon" style="background:color-mix(in srgb, ${iconColor} 8%, transparent);color:${iconColor}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <div class="doc-cell-title">${doc.title}</div>
+        </div>
+        <div class="tags-cell">
+          ${docTags.map(t => `<span class="mini-tag" style="background:color-mix(in srgb, ${t.color} 12%, transparent);color:${t.color}">${t.name}</span>`).join('')}
+          <button class="add-tag-btn" onclick="showTagDropdown(event, ${doc.id})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </button>
+        </div>
+        <div><span class="status-badge ${statusClass}">${statusText}</span></div>
+        <div class="meta-cell">${doc.date}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Render Tag Cloud
+function renderTagCloud() {
+  const cloud = document.getElementById('tagCloud');
+  const maxCount = Math.max(...tags.map(t => t.count));
+  
+  cloud.innerHTML = tags.map(tag => {
+    const size = 14 + (tag.count / maxCount) * 32;
+    return `<div class="cloud-tag" style="font-size:${size}px;color:${tag.color};background:color-mix(in srgb, ${tag.color} 8%, transparent)">${tag.name}</div>`;
+  }).join('');
+  
+  const chart = document.getElementById('chartBars');
+  const top5 = [...tags].sort((a, b) => b.count - a.count).slice(0, 5);
+  const maxVal = top5[0].count;
+  
+  chart.innerHTML = top5.map(tag => {
+    const pct = (tag.count / maxVal) * 100;
+    const textX = Math.max(pct - 3, 2);
+    return `
+    <div class="chart-bar-row">
+      <div class="bar-label">${tag.name}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${tag.color}">${tag.count}<svg><text x="${textX}%" y="16" text-anchor="end">${tag.count}</text></svg></div>
+      </div>
+      <div class="bar-value">${tag.count}</div>
+    </div>
+  `;
+  }).join('');
+}
+
+// Modal Functions
+function openCreateTagModal() {
+  editingTagId = null;
+  document.getElementById('modalTitle').textContent = '新建标签';
+  document.getElementById('tagNameInput').value = '';
+  selectedColor = colorPalette[0];
+  renderColorPicker();
+  document.getElementById('tagModal').classList.add('active');
+}
+
+function openEditTagModal() {
+  const tag = tags.find(t => t.id === selectedTagId);
+  if (!tag) return;
+  editingTagId = tag.id;
+  document.getElementById('modalTitle').textContent = '编辑标签';
+  document.getElementById('tagNameInput').value = tag.name;
+  selectedColor = tag.color;
+  renderColorPicker();
+  document.getElementById('tagModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('tagModal').classList.remove('active');
+}
+
+function renderColorPicker() {
+  const picker = document.getElementById('colorPicker');
+  picker.innerHTML = colorPalette.map(color => `
+    <div class="color-option ${color === selectedColor ? 'selected' : ''}" 
+         style="background:${resolvedColor(color)}" 
+         onclick="selectColor('${color}')"></div>
+  `).join('');
+}
+
+function selectColor(color) {
+  selectedColor = color;
+  renderColorPicker();
+}
+
+function saveTag() {
+  const name = document.getElementById('tagNameInput').value.trim();
+  if (!name) return;
+  
+  if (editingTagId) {
+    const tag = tags.find(t => t.id === editingTagId);
+    tag.name = name;
+    tag.color = selectedColor;
+  } else {
+    tags.push({ id: Date.now(), name, color: selectedColor, count: 0 });
+  }
+  
+  closeModal();
+  renderTagList();
+  renderTagDetail();
+  renderFilterChips();
+}
+
+function openDeleteModal() {
+  const tag = tags.find(t => t.id === selectedTagId);
+  document.getElementById('deleteTagName').textContent = tag.name;
+  document.getElementById('deleteModal').classList.add('active');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('active');
+}
+
+function confirmDelete() {
+  tags = tags.filter(t => t.id !== selectedTagId);
+  selectedTagId = tags[0]?.id || null;
+  closeDeleteModal();
+  renderTagList();
+  renderTagDetail();
+  renderFilterChips();
+}
+
+// Tag Dropdown
+function showTagDropdown(event, docId) {
+  event.stopPropagation();
+  const btn = event.currentTarget.closest('.add-tag-btn');
+  const dropdown = document.getElementById('tagDropdown');
+  dropdown.dataset.docId = docId;
+  const rect = btn.getBoundingClientRect();
+  dropdown.style.top = (rect.bottom + 8) + 'px';
+  dropdown.style.left = rect.left + 'px';
+  dropdown.classList.add('active');
+  
+  renderDropdownItems(docId);
+}
+
+function renderDropdownItems(docId) {
+  const doc = documents.find(d => d.id === docId);
+  const items = document.getElementById('dropdownItems');
+  items.innerHTML = tags.map(tag => {
+    const hasTag = doc.tags.includes(tag.id);
+    return `
+      <div class="dropdown-item" onclick="toggleDocTag(${docId}, ${tag.id})">
+        <div class="tag-color-dot" style="background:${tag.color}"></div>
+        <span style="flex:1">${tag.name}</span>
+        ${hasTag ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function filterDropdownTags(query) {
+  const docId = parseInt(document.getElementById('tagDropdown').dataset.docId || '0');
+  const doc = documents.find(d => d.id === docId);
+  if (!doc) return;
+  
+  const items = document.getElementById('dropdownItems');
+  const filtered = tags.filter(tag => tag.name.toLowerCase().includes(query.toLowerCase()));
+  items.innerHTML = filtered.map(tag => {
+    const hasTag = doc.tags.includes(tag.id);
+    return `
+      <div class="dropdown-item" onclick="toggleDocTag(${docId}, ${tag.id})">
+        <div class="tag-color-dot" style="background:${tag.color}"></div>
+        <span style="flex:1">${tag.name}</span>
+        ${hasTag ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleDocTag(docId, tagId) {
+  const doc = documents.find(d => d.id === docId);
+  const idx = doc.tags.indexOf(tagId);
+  if (idx > -1) doc.tags.splice(idx, 1);
+  else doc.tags.push(tagId);
+  renderDocuments();
+  document.getElementById('tagDropdown').classList.remove('active');
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', (e) => {
+  const dropdown = document.getElementById('tagDropdown');
+  if (!dropdown.contains(e.target) && !e.target.closest('.add-tag-btn')) {
+    dropdown.classList.remove('active');
+  }
+});
+
+// Initialize
+renderTagList();
+renderTagDetail();
+renderFilterChips();
+renderDocuments();
+renderColorPicker();
+</script>
+
+</body>
+</html>
