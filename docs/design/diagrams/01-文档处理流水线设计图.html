@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计图：文档处理流水线</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#f5f6fa;color:#1a1a2e;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+h1{font-size:28px;font-weight:700;margin-bottom:8px;color:#1a1a2e}
+h2{font-size:20px;font-weight:600;margin:32px 0 16px;color:#2d3436;padding-bottom:8px;border-bottom:2px solid #4361ee}
+h3{font-size:16px;font-weight:600;margin:20px 0 12px;color:#2d3436}
+.subtitle{color:#636e72;font-size:14px;margin-bottom:24px}
+
+/* Flow Diagram Styles */
+.flow-section{background:#fff;border-radius:12px;padding:32px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.flow-main{display:flex;flex-direction:column;align-items:center;gap:0}
+.flow-row{display:flex;align-items:stretch;gap:16px;width:100%;justify-content:center}
+.flow-node{background:#fff;border:2px solid #dfe6e9;border-radius:10px;padding:14px 20px;text-align:center;position:relative;min-width:140px;transition:all .2s}
+.flow-node:hover{border-color:#4361ee;box-shadow:0 4px 12px rgba(67,97,238,0.15);transform:translateY(-2px)}
+.flow-node .icon{font-size:24px;margin-bottom:6px}
+.flow-node .label{font-size:13px;font-weight:600;color:#2d3436}
+.flow-node .desc{font-size:11px;color:#636e72;margin-top:4px}
+.flow-node.status-pending{border-color:#fdcb6e;background:#ffeaa7}
+.flow-node.status-active{border-color:#4361ee;background:#e8edff}
+.flow-node.status-done{border-color:#00b894;background:#d4fce8}
+.flow-node.status-error{border-color:#d63031;background:#ffeaea}
+.flow-node.status-new{border-color:#6c5ce7;background:#f0edff}
+.flow-node.highlight{border-color:#e17055;background:#fff3f0}
+
+.flow-arrow{display:flex;flex-direction:column;align-items:center;padding:4px 0}
+.flow-arrow .line{width:2px;height:24px;background:#b2bec3}
+.flow-arrow .head{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #b2bec3}
+.flow-arrow .arrow-label{font-size:10px;color:#636e72;margin:2px 0}
+.flow-arrow-h{display:flex;align-items:center;padding:0 4px}
+.flow-arrow-h .line{height:2px;width:32px;background:#b2bec3}
+.flow-arrow-h .head{width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid #b2bec3}
+
+/* Parallel block */
+.parallel-block{display:flex;gap:24px;align-items:flex-start;width:100%;padding:16px 0}
+.parallel-branch{flex:1;display:flex;flex-direction:column;align-items:center;gap:0}
+.parallel-label{font-size:11px;color:#6c5ce7;font-weight:600;margin-bottom:8px;background:#f0edff;padding:2px 10px;border-radius:10px}
+
+/* Strategy comparison */
+.strategy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0}
+.strategy-card{background:#fff;border:2px solid #dfe6e9;border-radius:10px;padding:20px;transition:all .2s}
+.strategy-card:hover{border-color:#4361ee;box-shadow:0 4px 12px rgba(67,97,238,0.12)}
+.strategy-card .card-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.strategy-card .card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.strategy-card .card-title{font-size:14px;font-weight:600}
+.strategy-card .card-body{font-size:12px;color:#636e72}
+.strategy-card .card-body li{margin:4px 0;list-style:none;padding-left:16px;position:relative}
+.strategy-card .card-body li::before{content:"";position:absolute;left:0;top:7px;width:8px;height:2px;background:#4361ee}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.tag-blue{background:#e8edff;color:#4361ee}
+.tag-green{background:#d4fce8;color:#00b894}
+.tag-purple{background:#f0edff;color:#6c5ce7}
+.tag-orange{background:#ffeaa7;color:#e17055}
+
+/* UI Mockup Styles */
+.mockup-section{background:#fff;border-radius:12px;padding:24px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.mockup-container{background:#f8f9fa;border:1px solid #dfe6e9;border-radius:8px;overflow:hidden}
+.mockup-header{background:#2d3436;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:8px}
+.mockup-header .dot{width:10px;height:10px;border-radius:50%}
+.mockup-header .dot-red{background:#ff6b6b}
+.mockup-header .dot-yellow{background:#feca57}
+.mockup-header .dot-green{background:#48dbfb}
+.mockup-header .title{font-size:12px;margin-left:12px;opacity:0.8}
+.mockup-body{padding:20px}
+
+/* Form mockup */
+.mock-form{max-width:560px}
+.mock-form-group{margin-bottom:16px}
+.mock-form-label{font-size:13px;font-weight:600;color:#2d3436;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.mock-form-label .required{color:#d63031;font-size:14px}
+.mock-form-input{width:100%;padding:8px 12px;border:1px solid #dfe6e9;border-radius:6px;font-size:13px;background:#fff;color:#2d3436}
+.mock-form-input:focus{border-color:#4361ee;outline:none;box-shadow:0 0 0 3px rgba(67,97,238,0.1)}
+.mock-form-select{width:100%;padding:8px 12px;border:1px solid #dfe6e9;border-radius:6px;font-size:13px;background:#fff;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23636e72'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.mock-form-range{display:flex;align-items:center;gap:12px}
+.mock-form-range input[type=range]{flex:1;accent-color:#4361ee}
+.mock-form-range .range-val{font-size:13px;font-weight:600;color:#4361ee;min-width:48px;text-align:right}
+.mock-form-hint{font-size:11px;color:#636e72;margin-top:4px}
+.mock-btn{padding:8px 20px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.mock-btn-primary{background:#4361ee;color:#fff}
+.mock-btn-primary:hover{background:#3451d1}
+.mock-btn-ghost{background:transparent;color:#4361ee;border:1px solid #4361ee}
+.mock-radio-group{display:flex;gap:12px}
+.mock-radio{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 12px;border:1px solid #dfe6e9;border-radius:6px;transition:all .15s}
+.mock-radio.active{border-color:#4361ee;background:#e8edff;color:#4361ee;font-weight:600}
+.mock-radio .dot-outer{width:16px;height:16px;border-radius:50%;border:2px solid #dfe6e9;display:flex;align-items:center;justify-content:center}
+.mock-radio.active .dot-outer{border-color:#4361ee}
+.mock-radio.active .dot-outer::after{content:"";width:8px;height:8px;border-radius:50%;background:#4361ee}
+
+/* Status pipeline mockup */
+.status-pipeline{display:flex;align-items:center;gap:4px;padding:16px 0;overflow-x:auto}
+.status-step{display:flex;flex-direction:column;align-items:center;min-width:90px}
+.status-step .step-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid #dfe6e9;background:#fff}
+.status-step .step-label{font-size:11px;font-weight:600;margin-top:6px;color:#636e72}
+.status-step.active .step-circle{border-color:#4361ee;background:#e8edff;color:#4361ee}
+.status-step.done .step-circle{border-color:#00b894;background:#d4fce8;color:#00b894}
+.status-step.error .step-circle{border-color:#d63031;background:#ffeaea;color:#d63031}
+.status-connector{width:24px;height:2px;background:#dfe6e9;margin-bottom:20px}
+.status-connector.done{background:#00b894}
+
+/* Chunk visualization */
+.chunk-viz{display:flex;flex-direction:column;gap:8px;padding:12px;background:#f8f9fa;border-radius:8px;margin:12px 0}
+.chunk-block{display:flex;gap:8px;align-items:flex-start}
+.chunk-parent{background:#e8edff;border:1px solid #4361ee;border-radius:6px;padding:10px 14px;font-size:12px;flex:1;position:relative}
+.chunk-parent .chunk-tag{position:absolute;top:-8px;left:8px;font-size:9px;background:#4361ee;color:#fff;padding:1px 6px;border-radius:3px;font-weight:600}
+.chunk-child{background:#fff;border:1px solid #dfe6e9;border-radius:6px;padding:8px 12px;font-size:11px;flex:1;position:relative;margin-left:20px}
+.chunk-child .chunk-tag{position:absolute;top:-7px;left:8px;font-size:9px;background:#6c5ce7;color:#fff;padding:1px 6px;border-radius:3px;font-weight:600}
+.chunk-child .chunk-meta{font-size:10px;color:#636e72;margin-top:4px}
+.chunk-connector{width:1px;height:12px;background:#b2bec3;margin-left:40px}
+
+/* Data model */
+.model-card{background:#fff;border:2px solid #dfe6e9;border-radius:10px;overflow:hidden;max-width:400px}
+.model-header{padding:10px 16px;font-size:14px;font-weight:700;color:#fff}
+.model-header.blue{background:#4361ee}
+.model-header.purple{background:#6c5ce7}
+.model-header.green{background:#00b894}
+.model-field{display:flex;align-items:center;padding:6px 16px;font-size:12px;border-bottom:1px solid #f1f2f6}
+.model-field:last-child{border:none}
+.model-field .field-name{font-weight:600;min-width:130px;color:#2d3436}
+.model-field .field-type{color:#636e72;min-width:80px}
+.model-field .field-note{color:#b2bec3;font-size:11px}
+.model-field.new{background:#fffbe6}
+.model-field.new .field-name{color:#e17055}
+
+.model-relation{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:12px;color:#636e72}
+.model-relation .rel-line{flex:1;height:1px;background:#dfe6e9;position:relative}
+.model-relation .rel-line::after{content:"1:N";position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;color:#4361ee;background:#f8f9fa;padding:0 4px}
+
+/* Annotation */
+.annotation{background:#fffbe6;border-left:3px solid #fdcb6e;padding:10px 14px;border-radius:0 6px 6px 0;margin:12px 0;font-size:12px;color:#636e72}
+.annotation strong{color:#2d3436}
+.section-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;margin-right:8px}
+.badge-new{background:#d4fce8;color:#00b894}
+.badge-change{background:#e8edff;color:#4361ee}
+.badge-fix{background:#ffeaa7;color:#e17055}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📄 文档处理流水线 — 设计图</h1>
+<p class="subtitle">知源知识库 · 模块一 · 文档解析 / 分块策略 / 父子分块</p>
+
+<!-- ========== SECTION 1: 主流程 ========== -->
+<h2>一、文档处理主流程（现状 → 改造后）</h2>
+
+<div class="flow-section">
+<h3>现状流程</h3>
+<div class="annotation">
+<strong>问题：</strong>所有文件统一用 <code>fs.readFileSync(utf-8)</code> 读取，PDF/Word/HTML 解析未实现；分块逻辑与 ChunkingService 不一致；无父子分块关系。
+</div>
+
+<div class="flow-main">
+<div class="flow-row">
+<div class="flow-node status-done"><div class="icon">📤</div><div class="label">文档上传</div><div class="desc">保存到 uploads/</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node status-error"><div class="icon">📖</div><div class="label">解析（PARSING）</div><div class="desc">❌ 统一 readFileSync<br>不区分文件类型</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node status-error"><div class="icon">✂️</div><div class="label">分块（CHUNKING）</div><div class="desc">❌ IngestionProcessor 内部方法<br>未复用 ChunkingService</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node status-done"><div class="icon">🔢</div><div class="label">向量化（EMBEDDING）</div><div class="desc">DashScope text-embedding-v3</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node status-done"><div class="icon">✅</div><div class="label">完成（COMPLETED）</div><div class="desc">可参与检索</div></div>
+</div>
+</div>
+</div>
+
+<div class="flow-section">
+<h3>改造后流程 <span class="section-badge badge-new">新设计</span></h3>
+
+<div class="flow-main">
+<div class="flow-row">
+<div class="flow-node status-done"><div class="icon">📤</div><div class="label">文档上传</div><div class="desc">保存到 uploads / MinIO</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node status-active"><div class="icon">🔍</div><div class="label">读取知识库配置</div><div class="desc">chunkSize / overlap / strategy</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node status-new" style="min-width:500px">
+<div class="icon">📖</div><div class="label">文件解析（PARSING）— ParserRegistry 策略分发</div>
+<div style="display:flex;gap:12px;margin-top:12px;justify-content:center">
+<div style="background:#f0edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center"><strong>TextParser</strong><br>.md .txt</div>
+<div style="background:#f0edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center"><strong>PdfParser</strong><br>.pdf<br><span style="color:#6c5ce7">pdf-parse</span></div>
+<div style="background:#f0edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center"><strong>WordParser</strong><br>.doc .docx<br><span style="color:#6c5ce7">mammoth</span></div>
+<div style="background:#f0edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center"><strong>HtmlParser</strong><br>.html<br><span style="color:#6c5ce7">cheerio</span></div>
+</div>
+<div style="font-size:11px;color:#00b894;margin-top:8px">→ 输出 ParsedContent { text, sections[], metadata }</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node status-new" style="min-width:500px">
+<div class="icon">✂️</div><div class="label">智能分块（CHUNKING）— 策略模式</div>
+<div style="display:flex;gap:12px;margin-top:12px;justify-content:center">
+<div style="background:#e8edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center"><strong>Recursive</strong><br>通用递归分割</div>
+<div style="background:#e8edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center"><strong>Structure</strong><br>标题层级感知</div>
+<div style="background:#e8edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center"><strong>Semantic</strong><br>语义相似度切分</div>
+</div>
+<div style="font-size:11px;color:#00b894;margin-top:8px">→ 输出 ChunkResult[] { content, type, level, parentId, offset }</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node status-active"><div class="icon">🔗</div><div class="label">创建父子分块</div><div class="desc">level=0 为父块，level=1 为子块<br>子块 parentId 指向父块</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node status-done"><div class="icon">🔢</div><div class="label">向量化（EMBEDDING）</div><div class="desc">仅对叶子块（level=1 或独立块）生成 embedding</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row" style="gap:24px">
+<div class="flow-node status-done"><div class="icon">✅</div><div class="label">完成</div></div>
+<div class="flow-arrow-h"><div class="line"></div><div class="head"></div></div>
+<div class="flow-node status-new"><div class="icon">📝</div><div class="label">生成摘要 & 标签</div><div class="desc">可选 · 异步 · 不阻塞主流程</div></div>
+</div>
+</div>
+</div>
+
+<!-- ========== SECTION 2: 分块策略对比 ========== -->
+<h2>二、三种分块策略对比</h2>
+
+<div class="flow-section">
+<div class="strategy-grid">
+<div class="strategy-card">
+<div class="card-header">
+<div class="card-icon" style="background:#e8edff">🔄</div>
+<div><div class="card-title">Recursive 递归分割</div><span class="tag tag-blue">默认策略</span></div>
+</div>
+<div class="card-body">
+<ul>
+<li>按段落 → 句子 → 字符逐级切分</li>
+<li>分隔符优先级：\n\n > \n > 。 > . > ! > ?</li>
+<li>保持 chunkSize 和 overlap 控制</li>
+<li>适合：纯文本、通用文档</li>
+</ul>
+</div>
+</div>
+<div class="strategy-card">
+<div class="card-header">
+<div class="card-icon" style="background:#d4fce8">🏗️</div>
+<div><div class="card-title">Structure 结构化分块</div><span class="tag tag-green">新增</span></div>
+</div>
+<div class="card-body">
+<ul>
+<li>识别 Markdown 标题层级（H1-H6）</li>
+<li>按章节树结构划分父子关系</li>
+<li>保持代码块、表格完整性</li>
+<li>适合：Markdown、PDF、HTML</li>
+</ul>
+</div>
+</div>
+<div class="strategy-card">
+<div class="card-header">
+<div class="card-icon" style="background:#f0edff">🧠</div>
+<div><div class="card-title">Semantic 语义分块</div><span class="tag tag-purple">高级</span></div>
+</div>
+<div class="card-body">
+<ul>
+<li>逐句计算 embedding 向量</li>
+<li>相邻句子相似度低于阈值时切断</li>
+<li>语义完整性最高，但消耗更大</li>
+<li>适合：高精度检索场景</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ========== SECTION 3: 父子分块 ========== -->
+<h2>三、父子分块结构示意</h2>
+
+<div class="flow-section">
+<h3>分块层级关系</h3>
+<div class="chunk-viz">
+<div class="chunk-block">
+<div class="chunk-parent">
+<span class="chunk-tag">父块 #0 · level=0</span>
+<div style="font-weight:600;margin-top:4px">第三章 系统架构设计</div>
+<div style="font-size:11px;color:#636e72">本章介绍系统的整体架构设计，包括前端架构、后端架构和数据库设计三大部分……</div>
+</div>
+</div>
+<div class="chunk-connector"></div>
+<div style="display:flex;gap:8px;margin-left:20px">
+<div class="chunk-child" style="margin-left:0">
+<span class="chunk-tag">子块 #0-1</span>
+系统采用前后端分离架构。后端基于 NestJS 框架，提供 RESTful API 接口……
+<div class="chunk-meta">offset: 0-480 · embedding ✓</div>
+</div>
+<div class="chunk-child">
+<span class="chunk-tag">子块 #0-2</span>
+前端基于 Vue 3 + Vite 构建，使用 Element Plus 组件库，Pinia 管理全局状态……
+<div class="chunk-meta">offset: 430-920 · embedding ✓</div>
+</div>
+<div class="chunk-child">
+<span class="chunk-tag">子块 #0-3</span>
+数据库使用 PostgreSQL 配合 pgvector 扩展，支持向量相似度检索……
+<div class="chunk-meta">offset: 870-1340 · embedding ✓</div>
+</div>
+</div>
+</div>
+
+<div class="annotation" style="margin-top:16px">
+<strong>检索行为：</strong>命中子块 #0-2 时，自动携带父块 #0 的完整内容作为上下文 → LLM 回答更完整，用户可看到整个章节背景。
+</div>
+
+<h3>检索时上下文返回流程</h3>
+<div class="flow-main" style="margin-top:12px">
+<div class="flow-row">
+<div class="flow-node"><div class="icon">❓</div><div class="label">用户提问</div></div>
+<div class="flow-arrow-h"><div class="line"></div><div class="head"></div></div>
+<div class="flow-node status-active"><div class="icon">🔍</div><div class="label">向量检索</div><div class="desc">命中子块 #0-2</div></div>
+<div class="flow-arrow-h"><div class="line"></div><div class="head"></div></div>
+<div class="flow-node status-new"><div class="icon">🔗</div><div class="label">查询 parentId</div><div class="desc">获取父块 #0</div></div>
+<div class="flow-arrow-h"><div class="line"></div><div class="head"></div></div>
+<div class="flow-node status-done"><div class="icon">📦</div><div class="label">返回组合</div><div class="desc">子块内容 + 父块上下文</div></div>
+</div>
+</div>
+</div>
+
+<!-- ========== SECTION 4: 数据模型 ========== -->
+<h2>四、数据模型变更</h2>
+
+<div class="flow-section">
+<div style="display:flex;gap:24px;flex-wrap:wrap">
+<div class="model-card">
+<div class="model-header blue">Chunk（分块表 · 新增字段）</div>
+<div class="model-field"><span class="field-name">id</span><span class="field-type">String</span><span class="field-note">PK</span></div>
+<div class="model-field"><span class="field-name">documentId</span><span class="field-type">String</span><span class="field-note">FK → Document</span></div>
+<div class="model-field"><span class="field-name">content</span><span class="field-type">String</span></div>
+<div class="model-field"><span class="field-name">embedding</span><span class="field-type">vector(1024)</span></div>
+<div class="model-field"><span class="field-name">chunkIndex</span><span class="field-type">Int</span></div>
+<div class="model-field new"><span class="field-name">parentId ✦</span><span class="field-type">String?</span><span class="field-note">FK → Chunk</span></div>
+<div class="model-field new"><span class="field-name">level ✦</span><span class="field-type">Int</span><span class="field-note">0=父 1=子</span></div>
+<div class="model-field new"><span class="field-name">startOffset ✦</span><span class="field-type">Int?</span><span class="field-note">原文偏移</span></div>
+<div class="model-field new"><span class="field-name">endOffset ✦</span><span class="field-type">Int?</span></div>
+<div class="model-field new"><span class="field-name">chunkType ✦</span><span class="field-type">String</span><span class="field-note">text/heading/code/table</span></div>
+</div>
+
+<div class="model-card">
+<div class="model-header green">KnowledgeBase（新增字段）</div>
+<div class="model-field"><span class="field-name">id</span><span class="field-type">String</span><span class="field-note">PK</span></div>
+<div class="model-field"><span class="field-name">name</span><span class="field-type">String</span></div>
+<div class="model-field"><span class="field-name">topK</span><span class="field-type">Int</span></div>
+<div class="model-field"><span class="field-name">similarityThreshold</span><span class="field-type">Float</span></div>
+<div class="model-field new"><span class="field-name">chunkSize ✦</span><span class="field-type">Int</span><span class="field-note">默认 500</span></div>
+<div class="model-field new"><span class="field-name">chunkOverlap ✦</span><span class="field-type">Int</span><span class="field-note">默认 50</span></div>
+<div class="model-field new"><span class="field-name">chunkStrategy ✦</span><span class="field-type">String</span><span class="field-note">recursive/structure/semantic</span></div>
+</div>
+</div>
+</div>
+
+<!-- ========== SECTION 5: UI 原型 ========== -->
+<h2>五、UI 界面原型</h2>
+
+<div class="mockup-section">
+<h3>知识库配置 — 分块参数设置（新增区域）</h3>
+<div class="mockup-container">
+<div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="title">创建 / 编辑知识库</span></div>
+<div class="mockup-body">
+<div class="mock-form">
+<div class="mock-form-group">
+<div class="mock-form-label"><span class="required">*</span> 知识库名称</div>
+<input class="mock-form-input" value="产品技术文档库" readonly>
+</div>
+<div class="mock-form-group">
+<div class="mock-form-label">描述</div>
+<input class="mock-form-input" value="存放产品需求文档和技术方案" readonly>
+</div>
+
+<div style="border-top:1px dashed #dfe6e9;margin:20px 0;padding-top:16px">
+<div style="font-size:12px;font-weight:700;color:#6c5ce7;margin-bottom:12px">📐 分块配置 <span class="tag tag-purple">新增</span></div>
+</div>
+
+<div class="mock-form-group">
+<div class="mock-form-label">分块策略</div>
+<div class="mock-radio-group">
+<div class="mock-radio active"><div class="dot-outer"></div>递归分割</div>
+<div class="mock-radio"><div class="dot-outer"></div>结构化分块</div>
+<div class="mock-radio"><div class="dot-outer"></div>语义分块</div>
+</div>
+<div class="mock-form-hint">递归分割适合通用文档；结构化分块适合有标题层级的 Markdown；语义分块精度最高但消耗更多 API 调用</div>
+</div>
+
+<div class="mock-form-group">
+<div class="mock-form-label">分块大小</div>
+<div class="mock-form-range">
+<input type="range" min="100" max="2000" value="500" step="100">
+<span class="range-val">500 字符</span>
+</div>
+<div class="mock-form-hint">建议 300-800，较小的块更精确但可能丢失上下文</div>
+</div>
+
+<div class="mock-form-group">
+<div class="mock-form-label">分块重叠</div>
+<div class="mock-form-range">
+<input type="range" min="0" max="500" value="50" step="10">
+<span class="range-val">50 字符</span>
+</div>
+<div class="mock-form-hint">相邻块的重叠字符数，保持上下文连续性</div>
+</div>
+
+<div class="mock-form-group">
+<div class="mock-form-label">启用父子分块</div>
+<div style="display:flex;align-items:center;gap:8px">
+<div style="width:40px;height:22px;background:#4361ee;border-radius:11px;position:relative;cursor:pointer">
+<div style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;right:2px"></div>
+</div>
+<span style="font-size:12px;color:#00b894;font-weight:600">已启用</span>
+</div>
+<div class="mock-form-hint">开启后，检索命中子块时会自动返回父块上下文，提升回答完整性</div>
+</div>
+
+<div style="display:flex;gap:12px;margin-top:20px">
+<button class="mock-btn mock-btn-primary">保存配置</button>
+<button class="mock-btn mock-btn-ghost">取消</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mockup-section">
+<h3>文档处理状态 — 增强进度展示</h3>
+<div class="mockup-container">
+<div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="title">文档列表 · 产品需求文档.pdf</span></div>
+<div class="mockup-body">
+<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+<div style="font-size:14px;font-weight:600">产品需求文档 v2.3.pdf</div>
+<span class="tag tag-orange">处理中</span>
+</div>
+
+<div class="status-pipeline">
+<div class="status-step done"><div class="step-circle">✓</div><div class="step-label">待处理</div></div>
+<div class="status-connector done"></div>
+<div class="status-step done"><div class="step-circle">✓</div><div class="step-label">解析中</div></div>
+<div class="status-connector done"></div>
+<div class="status-step done"><div class="step-circle">✓</div><div class="step-label">分块中</div></div>
+<div class="status-connector"></div>
+<div class="status-step active"><div class="step-circle">⟳</div><div class="step-label">向量化</div></div>
+<div class="status-connector"></div>
+<div class="status-step"><div class="step-circle">○</div><div class="step-label">完成</div></div>
+</div>
+
+<div style="background:#f8f9fa;border-radius:8px;padding:12px 16px;margin-top:12px">
+<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px">
+<span>处理进度</span><span style="font-weight:600;color:#4361ee">68%</span>
+</div>
+<div style="height:6px;background:#e8edff;border-radius:3px;overflow:hidden">
+<div style="width:68%;height:100%;background:linear-gradient(90deg,#4361ee,#6c5ce7);border-radius:3px"></div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:11px;color:#636e72;margin-top:6px">
+<span>已处理 17 / 25 个分块</span>
+<span>预计剩余 ~12 秒</span>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px">
+<div style="background:#f8f9fa;padding:10px;border-radius:6px;text-align:center">
+<div style="font-size:18px;font-weight:700;color:#4361ee">25</div>
+<div style="font-size:11px;color:#636e72">总分块数</div>
+</div>
+<div style="background:#f8f9fa;padding:10px;border-radius:6px;text-align:center">
+<div style="font-size:18px;font-weight:700;color:#00b894">17</div>
+<div style="font-size:11px;color:#636e72">已完成</div>
+</div>
+<div style="background:#f8f9fa;padding:10px;border-radius:6px;text-align:center">
+<div style="font-size:18px;font-weight:700;color:#6c5ce7">5</div>
+<div style="font-size:11px;color:#636e72">父块数</div>
+</div>
+<div style="background:#f8f9fa;padding:10px;border-radius:6px;text-align:center">
+<div style="font-size:18px;font-weight:700;color:#e17055">2.3s</div>
+<div style="font-size:11px;color:#636e72">解析耗时</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

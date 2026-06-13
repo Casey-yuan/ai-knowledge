@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum DocumentStatus {
+  PENDING
+  PARSING
+  CHUNKING
+  EMBEDDING
+  COMPLETED
+  FAILED
+}
+
+enum DocumentType {
+  MARKDOWN
+  FILE
+}
+
+model User {
+  id           String          @id @default(uuid())
+  email        String?         @unique
+  phone        String?         @unique
+  passwordHash String?
+  nickname     String?
+  avatar       String?
+  status       UserStatus      @default(ACTIVE)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  roles        UserRole[]
+  documents    Document[]
+  conversations Conversation[]
+  auditLogs    AuditLog[]
+  knowledgeBases KnowledgeBase[] @relation("KnowledgeBaseCreator")
+}
+
+model Role {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  label     String
+  createdAt DateTime   @default(now())
+
+  users     UserRole[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid())
+  phone     String
+  code      String
+  type      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model KnowledgeBase {
+  id                 String          @id @default(uuid())
+  name               String
+  description        String?
+  embeddingModelId   String?
+  llmProviderId      String?
+  topK               Int             @default(5)
+  similarityThreshold Float          @default(0.7)
+  rerankEnabled      Boolean         @default(false)
+  isPublic           Boolean         @default(false)
+  viewCount          Int             @default(0)
+  // Chunking config (Dimension 1)
+  chunkSize          Int             @default(500)
+  chunkOverlap       Int             @default(50)
+  chunkStrategy      String          @default("recursive")
+  createdBy          String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  documents          Document[]
+  conversations      Conversation[]
+  creator            User?           @relation("KnowledgeBaseCreator", fields: [createdBy], references: [id])
+}
+
+model Document {
+  id        String         @id @default(uuid())
+  kbId      String
+  title     String
+  content   String?
+  summary   String?
+  type      DocumentType   @default(FILE)
+  filePath  String?
+  fileSize  Int?
+  mimeType  String?
+  status    DocumentStatus @default(PENDING)
+  version   Int            @default(1)
+  isPublic  Boolean        @default(true)
+  viewCount Int            @default(0)
+  metadata  Json?
+  createdBy String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  kb        KnowledgeBase  @relation(fields: [kbId], references: [id], onDelete: Cascade)
+  creator   User?          @relation(fields: [createdBy], references: [id])
+  versions  DocumentVersion[]
+  chunks    Chunk[]
+  tags      DocTag[]
+}
+
+model DocumentVersion {
+  id         String   @id @default(uuid())
+  documentId String
+  content    String?
+  diff       String?
+  version    Int
+  createdBy  String?
+  createdAt  DateTime @default(now())
+
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+model Chunk {
+  id          String   @id @default(uuid())
+  documentId  String
+  content     String
+  embedding   Unsupported("vector(1024)")?
+  chunkIndex  Int
+  metadata    Json?
+  parentId    String?
+  level       Int      @default(0)
+  startOffset Int?
+  endOffset   Int?
+  chunkType   String   @default("text")
+  createdAt   DateTime @default(now())
+
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  parent      Chunk?   @relation("ParentChild", fields: [parentId], references: [id])
+  children    Chunk[]  @relation("ParentChild")
+
+  @@index([documentId])
+  @@index([parentId])
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  kbId      String
+  userId    String
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  kb        KnowledgeBase @relation(fields: [kbId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Message[]
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  role           String
+  content        String
+  citations      Json?
+  feedback       String?
+  tokenCount     Int?
+  createdAt      DateTime @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  color     String?
+  createdAt DateTime @default(now())
+
+  documents DocTag[]
+}
+
+model DocTag {
+  documentId String
+  tagId      String
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([documentId, tagId])
+}
+
+model EmbeddingModel {
+  id        String   @id @default(uuid())
+  name      String
+  provider  String
+  modelName String
+  dimension Int      @default(1536)
+  apiKey    String
+  apiBase   String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LlmProvider {
+  id        String   @id @default(uuid())
+  name      String
+  provider  String
+  modelName String
+  apiKey    String
+  apiBase   String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  detail     Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+}
+
+model RetrievalCache {
+  id        String   @id @default(uuid())
+  kbIds     String
+  query     String
+  queryHash String   @unique
+  results   Json
+  hitCount  Int      @default(1)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+model SystemSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计图：权限与协作</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#f5f6fa;color:#1a1a2e;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+h1{font-size:28px;font-weight:700;margin-bottom:8px}
+h2{font-size:20px;font-weight:600;margin:32px 0 16px;color:#2d3436;padding-bottom:8px;border-bottom:2px solid #4361ee}
+h3{font-size:16px;font-weight:600;margin:20px 0 12px;color:#2d3436}
+.subtitle{color:#636e72;font-size:14px;margin-bottom:24px}
+.flow-section{background:#fff;border-radius:12px;padding:32px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.flow-main{display:flex;flex-direction:column;align-items:center;gap:0}
+.flow-row{display:flex;align-items:stretch;gap:16px;width:100%;justify-content:center;flex-wrap:wrap}
+.flow-node{background:#fff;border:2px solid #dfe6e9;border-radius:10px;padding:14px 20px;text-align:center;min-width:140px;transition:all .2s}
+.flow-node:hover{border-color:#4361ee;box-shadow:0 4px 12px rgba(67,97,238,0.15)}
+.flow-node .icon{font-size:24px;margin-bottom:6px}
+.flow-node .label{font-size:13px;font-weight:600;color:#2d3436}
+.flow-node .desc{font-size:11px;color:#636e72;margin-top:4px}
+.flow-node.active{border-color:#4361ee;background:#e8edff}
+.flow-node.new{border-color:#6c5ce7;background:#f0edff}
+.flow-node.done{border-color:#00b894;background:#d4fce8}
+.flow-node.highlight{border-color:#e17055;background:#fff3f0}
+.flow-node.warning{border-color:#fdcb6e;background:#fffbe6}
+.flow-arrow{display:flex;flex-direction:column;align-items:center;padding:4px 0}
+.flow-arrow .line{width:2px;height:24px;background:#b2bec3}
+.flow-arrow .head{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #b2bec3}
+.flow-arrow .arrow-label{font-size:10px;color:#636e72;margin:2px 0}
+.flow-arrow-h{display:flex;align-items:center;padding:0 4px}
+.flow-arrow-h .line{height:2px;width:32px;background:#b2bec3}
+.flow-arrow-h .head{width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid #b2bec3}
+.annotation{background:#fffbe6;border-left:3px solid #fdcb6e;padding:10px 14px;border-radius:0 6px 6px 0;margin:12px 0;font-size:12px;color:#636e72}
+.annotation strong{color:#2d3436}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.tag-blue{background:#e8edff;color:#4361ee}
+.tag-green{background:#d4fce8;color:#00b894}
+.tag-purple{background:#f0edff;color:#6c5ce7}
+.tag-orange{background:#ffeaa7;color:#e17055}
+.mockup-section{background:#fff;border-radius:12px;padding:24px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.mockup-container{background:#f8f9fa;border:1px solid #dfe6e9;border-radius:8px;overflow:hidden}
+.mockup-header{background:#2d3436;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:8px}
+.mockup-header .dot{width:10px;height:10px;border-radius:50%}
+.mockup-header .dot-red{background:#ff6b6b}
+.mockup-header .dot-yellow{background:#feca57}
+.mockup-header .dot-green{background:#48dbfb}
+.mockup-header .title{font-size:12px;margin-left:12px;opacity:0.8}
+.mockup-body{padding:20px}
+
+/* Permission matrix */
+.perm-table{width:100%;border-collapse:collapse;font-size:12px}
+.perm-table th{background:#f8f9fa;padding:8px 12px;text-align:left;font-weight:600;border-bottom:2px solid #dfe6e9}
+.perm-table td{padding:8px 12px;border-bottom:1px solid #f1f2f6}
+.perm-table tr:hover td{background:#f8faff}
+.perm-yes{color:#00b894;font-weight:700}
+.perm-no{color:#d63031}
+.perm-partial{color:#e17055;font-weight:600}
+
+/* Member list */
+.member-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f2f6}
+.member-item:last-child{border:none}
+.member-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
+.member-info{flex:1}
+.member-name{font-size:13px;font-weight:600}
+.member-role{font-size:11px}
+.member-role.admin{color:#6c5ce7}
+.member-role.editor{color:#4361ee}
+.member-role.viewer{color:#636e72}
+
+/* Role badge */
+.role-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.role-badge.admin{background:#f0edff;color:#6c5ce7}
+.role-badge.editor{background:#e8edff;color:#4361ee}
+.role-badge.viewer{background:#f1f2f6;color:#636e72}
+
+/* Review flow */
+.review-card{background:#fff;border:1px solid #dfe6e9;border-radius:8px;padding:14px;margin:8px 0;transition:all .15s}
+.review-card:hover{border-color:#4361ee;box-shadow:0 2px 8px rgba(67,97,238,0.08)}
+.review-card .rv-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.review-card .rv-title{font-size:13px;font-weight:600;flex:1}
+.review-card .rv-status{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:600}
+.review-card .rv-status.pending{background:#ffeaa7;color:#e17055}
+.review-card .rv-status.approved{background:#d4fce8;color:#00b894}
+.review-card .rv-status.rejected{background:#ffeaea;color:#d63031}
+.review-card .rv-meta{font-size:11px;color:#636e72}
+.review-card .rv-actions{display:flex;gap:6px;margin-top:8px}
+.rv-btn{padding:5px 14px;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer}
+.rv-btn-approve{background:#00b894;color:#fff}
+.rv-btn-reject{background:#ffeaea;color:#d63031;border:1px solid #d63031}
+.rv-btn-view{background:#f1f2f6;color:#636e72}
+
+/* Comment mockup */
+.comment-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #f1f2f6}
+.comment-item:last-child{border:none}
+.comment-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.comment-body{flex:1}
+.comment-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.comment-author{font-size:12px;font-weight:600}
+.comment-time{font-size:10px;color:#b2bec3}
+.comment-text{font-size:12px;color:#2d3436;line-height:1.5}
+.comment-actions{display:flex;gap:12px;margin-top:6px;font-size:11px;color:#636e72}
+.comment-actions span{cursor:pointer}
+.comment-actions span:hover{color:#4361ee}
+.comment-reply{margin-left:42px;border-left:2px solid #e8edff;padding-left:12px}
+.comment-resolved{background:#d4fce8;padding:2px 8px;border-radius:4px;font-size:10px;color:#00b894;font-weight:600}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🔐 权限与协作 — 设计图</h1>
+<p class="subtitle">知源知识库 · 模块四 · 成员管理 / 审批工作流 / 评论批注 / 统一访问控制</p>
+
+<!-- ========== 权限架构 ========== -->
+<h2>一、权限层级架构</h2>
+
+<div class="flow-section">
+<div class="annotation">
+<strong>改造思路：</strong>从简单的 createdBy + isPublic 二元控制，升级为「系统角色 + 知识库成员 + 资源级权限」三层模型。AccessControlService 统一封装所有权限判断逻辑。
+</div>
+
+<div class="flow-main">
+<div class="flow-row" style="gap:24px">
+<div class="flow-node" style="min-width:200px">
+<div class="icon">🏛️</div>
+<div class="label">第一层：系统角色</div>
+<div style="margin-top:8px;display:flex;gap:8px;justify-content:center">
+<span class="role-badge admin">Admin</span>
+<span class="role-badge viewer">User</span>
+</div>
+<div class="desc">全局管理权限</div>
+</div>
+<div class="flow-node new" style="min-width:260px">
+<div class="icon">👥</div>
+<div class="label">第二层：知识库成员 <span class="tag tag-green">新增</span></div>
+<div style="margin-top:8px;display:flex;gap:6px;justify-content:center">
+<span class="role-badge admin">ADMIN</span>
+<span class="role-badge editor">EDITOR</span>
+<span class="role-badge viewer">VIEWER</span>
+</div>
+<div class="desc">知识库级细粒度权限</div>
+</div>
+<div class="flow-node new" style="min-width:200px">
+<div class="icon">📄</div>
+<div class="label">第三层：资源操作 <span class="tag tag-green">新增</span></div>
+<div style="margin-top:8px;font-size:11px;color:#636e72">
+文档审批 · 评论权限<br>
+知识库设置 · 成员管理
+</div>
+</div>
+</div>
+
+<div style="margin-top:24px;width:100%">
+<div class="flow-node new" style="max-width:600px;margin:0 auto">
+<div class="icon">🛡️</div>
+<div class="label">AccessControlService — 统一权限层</div>
+<div style="display:flex;gap:8px;margin-top:8px;justify-content:center;font-size:11px;flex-wrap:wrap">
+<span style="background:#f0edff;padding:4px 10px;border-radius:4px">canAccessKb()</span>
+<span style="background:#f0edff;padding:4px 10px;border-radius:4px">getKbRole()</span>
+<span style="background:#f0edff;padding:4px 10px;border-radius:4px">canEditDocument()</span>
+<span style="background:#f0edff;padding:4px 10px;border-radius:4px">canManageKb()</span>
+<span style="background:#f0edff;padding:4px 10px;border-radius:4px">buildKbAccessFilter()</span>
+<span style="background:#f0edff;padding:4px 10px;border-radius:4px">buildDocAccessFilter()</span>
+</div>
+<div class="desc" style="margin-top:8px">替代各 Service 中分散的 OR 过滤逻辑</div>
+</div>
+</div>
+</div>
+
+<h3>权限矩阵</h3>
+<table class="perm-table">
+<tr><th>操作</th><th>系统 Admin</th><th>KB ADMIN</th><th>KB EDITOR</th><th>KB VIEWER</th><th>非成员（公开KB）</th></tr>
+<tr><td>查看知识库</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+<tr><td>管理成员 / 设置</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">❌</td><td class="perm-no">❌</td><td class="perm-no">❌</td></tr>
+<tr><td>创建 / 编辑文档</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">❌</td><td class="perm-no">❌</td></tr>
+<tr><td>上传文件</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">❌</td><td class="perm-no">❌</td></tr>
+<tr><td>提交审核</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">❌</td><td class="perm-no">❌</td></tr>
+<tr><td>审核通过 / 拒绝</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-no">❌</td><td class="perm-no">❌</td><td class="perm-no">❌</td></tr>
+<tr><td>评论 / 批注</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-partial">⚠️ 需 allowComments</td></tr>
+<tr><td>对话问答</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td></tr>
+<tr><td>删除文档</td><td class="perm-yes">✅</td><td class="perm-yes">✅</td><td class="perm-partial">⚠️ 仅自己</td><td class="perm-no">❌</td><td class="perm-no">❌</td></tr>
+<tr><td>删除知识库</td><td class="perm-yes">✅</td><td class="perm-no">❌</td><td class="perm-no">❌</td><td class="perm-no">❌</td><td class="perm-no">❌</td></tr>
+</table>
+</div>
+
+<!-- ========== 审批流程 ========== -->
+<h2>二、文档审批工作流</h2>
+
+<div class="flow-section">
+<div class="flow-main">
+<div class="flow-row">
+<div class="flow-node"><div class="icon">📝</div><div class="label">编辑文档</div><div class="desc">EDITOR/ADMIN 编辑完成</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+
+<div class="flow-row" style="gap:32px">
+<!-- 无需审批路径 -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:0">
+<div style="font-size:11px;font-weight:600;color:#00b894;margin-bottom:4px;background:#d4fce8;padding:2px 10px;border-radius:8px">requireReview = false</div>
+<div class="flow-node done"><div class="icon">⚡</div><div class="label">直接发布</div><div class="desc">reviewStatus = APPROVED<br>自动触发 ingestion</div></div>
+</div>
+
+<!-- 需要审批路径 -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:0">
+<div style="font-size:11px;font-weight:600;color:#e17055;margin-bottom:4px;background:#ffeaa7;padding:2px 10px;border-radius:8px">requireReview = true</div>
+<div class="flow-arrow"><div class="line" style="height:16px"></div><div class="head"></div></div>
+<div class="flow-node warning"><div class="icon">📋</div><div class="label">提交审核</div><div class="desc">创建 DocumentReview<br>status = PENDING<br>reviewStatus = PENDING</div></div>
+<div class="flow-arrow"><div class="arrow-label">等待审核人</div><div class="line"></div><div class="head"></div></div>
+<div class="flow-node active"><div class="icon">👁️</div><div class="label">审核人审阅</div><div class="desc">KB ADMIN 在审核列表中<br>查看文档内容和变更</div></div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div style="display:flex;gap:16px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:0">
+<div style="font-size:11px;color:#00b894;font-weight:600">通过</div>
+<div class="flow-arrow"><div class="line" style="height:12px"></div><div class="head" style="border-top-color:#00b894"></div></div>
+<div class="flow-node done" style="min-width:120px"><div class="icon">✅</div><div class="label">发布</div><div class="desc">触发 ingestion</div></div>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:0">
+<div style="font-size:11px;color:#d63031;font-weight:600">拒绝</div>
+<div class="flow-arrow"><div class="line" style="height:12px"></div><div class="head" style="border-top-color:#d63031"></div></div>
+<div class="flow-node highlight" style="min-width:120px"><div class="icon">❌</div><div class="label">退回</div><div class="desc">附拒绝原因<br>通知作者修改</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ========== 成员管理流程 ========== -->
+<h2>三、成员邀请流程</h2>
+
+<div class="flow-section">
+<div class="flow-main">
+<div class="flow-row">
+<div class="flow-node"><div class="icon">👑</div><div class="label">KB ADMIN</div><div class="desc">知识库管理者</div></div>
+<div class="flow-arrow-h"><div class="line"></div><div class="head"></div></div>
+<div class="flow-node new"><div class="icon">✉️</div><div class="label">发送邀请</div><div class="desc">搜索用户（手机号/邮箱）<br>选择角色：VIEWER / EDITOR</div></div>
+<div class="flow-arrow-h"><div class="line"></div><div class="head"></div></div>
+<div class="flow-node active"><div class="icon">📝</div><div class="label">创建 KbMember</div><div class="desc">upsert(kbId, userId, role)<br>记录 invitedBy</div></div>
+<div class="flow-arrow-h"><div class="line"></div><div class="head"></div></div>
+<div class="flow-node done"><div class="icon">✅</div><div class="label">成员就绪</div><div class="desc">即时生效<br>可访问知识库</div></div>
+</div>
+</div>
+</div>
+
+<!-- ========== UI ========== -->
+<h2>四、UI 界面原型</h2>
+
+<div class="mockup-section">
+<h3>知识库详情 — 成员管理标签页</h3>
+<div class="mockup-container">
+<div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="title">知识库详情 · 产品技术文档库</span></div>
+<div class="mockup-body">
+<div style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid #f1f2f6">
+<div style="padding:8px 16px;font-size:13px;cursor:pointer;color:#636e72">文档列表</div>
+<div style="padding:8px 16px;font-size:13px;cursor:pointer;color:#636e72">检索测试</div>
+<div style="padding:8px 16px;font-size:13px;cursor:pointer;color:#4361ee;font-weight:600;border-bottom:2px solid #4361ee;margin-bottom:-2px">成员管理 <span class="tag tag-green">新</span></div>
+<div style="padding:8px 16px;font-size:13px;cursor:pointer;color:#636e72">设置</div>
+</div>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+<div style="font-size:14px;font-weight:600">成员列表 <span style="font-size:12px;color:#636e72;font-weight:400">(4 人)</span></div>
+<button style="padding:6px 14px;background:#4361ee;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">+ 邀请成员</button>
+</div>
+
+<div class="member-item">
+<div class="member-avatar" style="background:#6c5ce7">张</div>
+<div class="member-info">
+<div class="member-name">张明 <span style="font-size:11px;color:#b2bec3">· 138****1234</span></div>
+<div class="member-role admin">创建者 · 2026-05-20 加入</div>
+</div>
+<span class="role-badge admin">ADMIN</span>
+</div>
+
+<div class="member-item">
+<div class="member-avatar" style="background:#4361ee">李</div>
+<div class="member-info">
+<div class="member-name">李华 <span style="font-size:11px;color:#b2bec3">· lihua@company.com</span></div>
+<div class="member-role editor">由张明邀请 · 2026-06-01 加入</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px">
+<select style="padding:3px 8px;border:1px solid #dfe6e9;border-radius:4px;font-size:11px">
+<option>EDITOR</option>
+<option>VIEWER</option>
+<option>ADMIN</option>
+</select>
+<span style="font-size:11px;color:#d63031;cursor:pointer">移除</span>
+</div>
+</div>
+
+<div class="member-item">
+<div class="member-avatar" style="background:#00b894">王</div>
+<div class="member-info">
+<div class="member-name">王芳 <span style="font-size:11px;color:#b2bec3">· 139****5678</span></div>
+<div class="member-role viewer">由张明邀请 · 2026-06-05 加入</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px">
+<select style="padding:3px 8px;border:1px solid #dfe6e9;border-radius:4px;font-size:11px">
+<option selected>VIEWER</option>
+<option>EDITOR</option>
+<option>ADMIN</option>
+</select>
+<span style="font-size:11px;color:#d63031;cursor:pointer">移除</span>
+</div>
+</div>
+
+<div class="member-item">
+<div class="member-avatar" style="background:#e17055">陈</div>
+<div class="member-info">
+<div class="member-name">陈磊 <span style="font-size:11px;color:#b2bec3">· chenlei@company.com</span></div>
+<div class="member-role editor">由李华邀请 · 2026-06-08 加入</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px">
+<select style="padding:3px 8px;border:1px solid #dfe6e9;border-radius:4px;font-size:11px">
+<option selected>EDITOR</option>
+<option>VIEWER</option>
+<option>ADMIN</option>
+</select>
+<span style="font-size:11px;color:#d63031;cursor:pointer">移除</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mockup-section">
+<h3>审核工作台</h3>
+<div class="mockup-container">
+<div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="title">审核工作台 · 产品技术文档库</span></div>
+<div class="mockup-body">
+<div style="display:flex;gap:16px;margin-bottom:16px">
+<div style="background:#ffeaa7;padding:8px 16px;border-radius:8px;text-align:center;flex:1">
+<div style="font-size:20px;font-weight:700;color:#e17055">3</div>
+<div style="font-size:11px;color:#636e72">待审核</div>
+</div>
+<div style="background:#d4fce8;padding:8px 16px;border-radius:8px;text-align:center;flex:1">
+<div style="font-size:20px;font-weight:700;color:#00b894">12</div>
+<div style="font-size:11px;color:#636e72">已通过</div>
+</div>
+<div style="background:#ffeaea;padding:8px 16px;border-radius:8px;text-align:center;flex:1">
+<div style="font-size:20px;font-weight:700;color:#d63031">2</div>
+<div style="font-size:11px;color:#636e72">已拒绝</div>
+</div>
+</div>
+
+<div style="font-size:13px;font-weight:600;margin-bottom:8px">待审核文档</div>
+
+<div class="review-card">
+<div class="rv-header">
+<div class="rv-title">API 接口设计规范 v3.0</div>
+<span class="rv-status pending">待审核</span>
+</div>
+<div class="rv-meta">提交人: 李华 · 提交时间: 2026-06-10 14:30 · Markdown 文档</div>
+<div class="rv-actions">
+<button class="rv-btn rv-btn-approve">✓ 通过</button>
+<button class="rv-btn rv-btn-reject">✕ 拒绝</button>
+<button class="rv-btn rv-btn-view">查看内容</button>
+</div>
+</div>
+
+<div class="review-card">
+<div class="rv-header">
+<div class="rv-title">数据库设计文档.pdf</div>
+<span class="rv-status pending">待审核</span>
+</div>
+<div class="rv-meta">提交人: 陈磊 · 提交时间: 2026-06-10 16:12 · PDF 文件 · 2.3MB</div>
+<div class="rv-actions">
+<button class="rv-btn rv-btn-approve">✓ 通过</button>
+<button class="rv-btn rv-btn-reject">✕ 拒绝</button>
+<button class="rv-btn rv-btn-view">查看内容</button>
+</div>
+</div>
+
+<div class="review-card">
+<div class="rv-header">
+<div class="rv-title">前端组件库使用手册</div>
+<span class="rv-status pending">待审核</span>
+</div>
+<div class="rv-meta">提交人: 李华 · 提交时间: 2026-06-11 09:45 · Markdown 文档</div>
+<div class="rv-actions">
+<button class="rv-btn rv-btn-approve">✓ 通过</button>
+<button class="rv-btn rv-btn-reject">✕ 拒绝</button>
+<button class="rv-btn rv-btn-view">查看内容</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mockup-section">
+<h3>文档评论区（文档级 + 段落级批注）</h3>
+<div class="mockup-container">
+<div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="title">文档详情 · API 接口设计规范 v3.0</span></div>
+<div class="mockup-body">
+<div style="display:flex;gap:12px;margin-bottom:16px">
+<div style="flex:1">
+<div style="font-size:16px;font-weight:700;margin-bottom:4px">API 接口设计规范 v3.0</div>
+<div style="display:flex;gap:8px">
+<span class="tag tag-green">Markdown</span>
+<span class="tag tag-blue">公开</span>
+<span class="tag tag-purple">待审核</span>
+</div>
+</div>
+<div style="display:flex;gap:8px;align-items:center">
+<button style="padding:6px 14px;background:#f0edff;color:#6c5ce7;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">💬 评论 (3)</button>
+</div>
+</div>
+
+<div style="background:#f8f9fa;border-radius:8px;padding:16px;margin-bottom:16px">
+<div style="font-size:13px;line-height:1.8">
+<h4 style="font-size:14px;margin-bottom:8px">3.1 RESTful API 设计原则</h4>
+<p style="font-size:12px;color:#636e72;margin-bottom:8px">
+所有 API 端点遵循 RESTful 设计规范，使用 HTTP 标准方法表示资源操作。URL 路径采用小写加连字符格式，资源名称使用复数形式……
+</p>
+<div style="position:relative;padding:6px 10px;background:#fffbe6;border-left:3px solid #fdcb6e;border-radius:0 4px 4px 0;font-size:11px;margin:8px 0;cursor:pointer">
+💬 <strong>2 条批注</strong> · 点击展开段落评论
+</div>
+<p style="font-size:12px;color:#636e72">
+版本控制采用 URL 路径方式（/api/v1/），不推荐 Accept Header 方式……
+</p>
+</div>
+</div>
+
+<div style="font-size:13px;font-weight:600;margin-bottom:12px;border-top:1px solid #f1f2f6;padding-top:12px">💬 评论 (3)</div>
+
+<div class="comment-item">
+<div class="comment-avatar" style="background:#4361ee">李</div>
+<div class="comment-body">
+<div class="comment-header">
+<span class="comment-author">李华</span>
+<span class="comment-time">2 小时前</span>
+</div>
+<div class="comment-text">3.1 节的版本控制方案，是否考虑过同时支持 Header 方式？有些客户端场景 URL 路径方式不够灵活。</div>
+<div class="comment-actions">
+<span>👍 2</span>
+<span>回复</span>
+</div>
+<div class="comment-reply" style="margin-top:8px">
+<div class="comment-item" style="border:none;padding:8px 0">
+<div class="comment-avatar" style="background:#6c5ce7;width:28px;height:28px;font-size:10px">张</div>
+<div class="comment-body">
+<div class="comment-header">
+<span class="comment-author">张明</span>
+<span class="comment-time">1 小时前</span>
+</div>
+<div class="comment-text">好的建议，我补充一下两种方式的对比说明。</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="comment-item">
+<div class="comment-avatar" style="background:#00b894">王</div>
+<div class="comment-body">
+<div class="comment-header">
+<span class="comment-author">王芳</span>
+<span class="comment-time">1 小时前</span>
+<span class="comment-resolved">✓ 已解决</span>
+</div>
+<div class="comment-text">错误码规范表里的 4001 和 4002 描述好像重复了？</div>
+<div class="comment-actions">
+<span>👍 1</span>
+<span>回复</span>
+</div>
+</div>
+</div>
+
+<div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #f1f2f6">
+<div class="comment-avatar" style="background:#e17055;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0">陈</div>
+<input style="flex:1;padding:8px 12px;border:1px solid #dfe6e9;border-radius:6px;font-size:12px" placeholder="添加评论...">
+<button style="padding:8px 16px;background:#4361ee;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">发送</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

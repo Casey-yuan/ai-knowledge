@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计图：检索增强</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#f5f6fa;color:#1a1a2e;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+h1{font-size:28px;font-weight:700;margin-bottom:8px}
+h2{font-size:20px;font-weight:600;margin:32px 0 16px;color:#2d3436;padding-bottom:8px;border-bottom:2px solid #4361ee}
+h3{font-size:16px;font-weight:600;margin:20px 0 12px;color:#2d3436}
+.subtitle{color:#636e72;font-size:14px;margin-bottom:24px}
+.flow-section{background:#fff;border-radius:12px;padding:32px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.flow-main{display:flex;flex-direction:column;align-items:center;gap:0}
+.flow-row{display:flex;align-items:stretch;gap:16px;width:100%;justify-content:center}
+.flow-node{background:#fff;border:2px solid #dfe6e9;border-radius:10px;padding:14px 20px;text-align:center;min-width:140px;transition:all .2s}
+.flow-node:hover{border-color:#4361ee;box-shadow:0 4px 12px rgba(67,97,238,0.15);transform:translateY(-2px)}
+.flow-node .icon{font-size:24px;margin-bottom:6px}
+.flow-node .label{font-size:13px;font-weight:600;color:#2d3436}
+.flow-node .desc{font-size:11px;color:#636e72;margin-top:4px}
+.flow-node.active{border-color:#4361ee;background:#e8edff}
+.flow-node.new{border-color:#6c5ce7;background:#f0edff}
+.flow-node.done{border-color:#00b894;background:#d4fce8}
+.flow-node.highlight{border-color:#e17055;background:#fff3f0}
+.flow-arrow{display:flex;flex-direction:column;align-items:center;padding:4px 0}
+.flow-arrow .line{width:2px;height:24px;background:#b2bec3}
+.flow-arrow .head{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #b2bec3}
+.flow-arrow .arrow-label{font-size:10px;color:#636e72;margin:2px 0}
+.flow-arrow-h{display:flex;align-items:center;padding:0 4px}
+.flow-arrow-h .line{height:2px;width:32px;background:#b2bec3}
+.flow-arrow-h .head{width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid #b2bec3}
+.annotation{background:#fffbe6;border-left:3px solid #fdcb6e;padding:10px 14px;border-radius:0 6px 6px 0;margin:12px 0;font-size:12px;color:#636e72}
+.annotation strong{color:#2d3436}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.tag-blue{background:#e8edff;color:#4361ee}
+.tag-green{background:#d4fce8;color:#00b894}
+.tag-purple{background:#f0edff;color:#6c5ce7}
+.tag-orange{background:#ffeaa7;color:#e17055}
+.section-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;margin-right:8px}
+.badge-new{background:#d4fce8;color:#00b894}
+.badge-fix{background:#ffeaa7;color:#e17055}
+.mockup-section{background:#fff;border-radius:12px;padding:24px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.mockup-container{background:#f8f9fa;border:1px solid #dfe6e9;border-radius:8px;overflow:hidden}
+.mockup-header{background:#2d3436;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:8px}
+.mockup-header .dot{width:10px;height:10px;border-radius:50%}
+.mockup-header .dot-red{background:#ff6b6b}
+.mockup-header .dot-yellow{background:#feca57}
+.mockup-header .dot-green{background:#48dbfb}
+.mockup-header .title{font-size:12px;margin-left:12px;opacity:0.8}
+.mockup-body{padding:20px}
+.mock-form-label{font-size:13px;font-weight:600;color:#2d3436;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.mock-form-input{width:100%;padding:8px 12px;border:1px solid #dfe6e9;border-radius:6px;font-size:13px;background:#fff}
+.mock-btn{padding:8px 20px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer}
+.mock-btn-primary{background:#4361ee;color:#fff}
+.mock-btn-sm{padding:4px 12px;font-size:11px}
+.mock-radio-group{display:flex;gap:8px}
+.mock-radio{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:5px 10px;border:1px solid #dfe6e9;border-radius:6px}
+.mock-radio.active{border-color:#4361ee;background:#e8edff;color:#4361ee;font-weight:600}
+
+/* Score bar */
+.score-bar-wrap{display:flex;align-items:center;gap:8px}
+.score-bar{flex:1;height:8px;background:#f1f2f6;border-radius:4px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:4px}
+.score-val{font-size:12px;font-weight:700;min-width:48px;text-align:right}
+
+/* Result card */
+.result-card{background:#fff;border:1px solid #dfe6e9;border-radius:8px;padding:14px;margin:8px 0;transition:all .15s}
+.result-card:hover{border-color:#4361ee;box-shadow:0 2px 8px rgba(67,97,238,0.1)}
+.result-card .rc-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.result-card .rc-rank{width:24px;height:24px;border-radius:50%;background:#4361ee;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.result-card .rc-rank.top3{background:#4361ee}
+.result-card .rc-rank.normal{background:#b2bec3}
+.result-card .rc-title{font-size:13px;font-weight:600;color:#2d3436}
+.result-card .rc-source{font-size:11px;color:#636e72}
+.result-card .rc-content{font-size:12px;color:#636e72;line-height:1.5;background:#f8f9fa;padding:8px 12px;border-radius:6px;margin:8px 0}
+.result-card .rc-scores{display:flex;gap:16px;font-size:11px}
+.result-card .rc-scores span{display:flex;align-items:center;gap:4px}
+
+/* Filter panel */
+.filter-panel{background:#f8f9fa;border:1px solid #dfe6e9;border-radius:8px;padding:16px}
+.filter-group{margin-bottom:12px}
+.filter-label{font-size:12px;font-weight:600;color:#2d3436;margin-bottom:4px}
+.filter-tags{display:flex;flex-wrap:wrap;gap:4px}
+.filter-tag{font-size:11px;padding:3px 10px;border-radius:12px;border:1px solid #dfe6e9;background:#fff;cursor:pointer;transition:all .15s}
+.filter-tag.active{border-color:#4361ee;background:#e8edff;color:#4361ee;font-weight:600}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🔍 检索增强 — 设计图</h1>
+<p class="subtitle">知源知识库 · 模块二 · 混合检索 / RRF 融合 / Rerank / 查询重写 / 缓存</p>
+
+<!-- ========== 主流程 ========== -->
+<h2>一、检索流水线全景（改造后）</h2>
+
+<div class="flow-section">
+<div class="annotation">
+<strong>核心改动：</strong>当前 <code>hybridSearch</code> 实际只做向量检索；改造后实现真正的多路召回 + RRF 融合 + 可选 Rerank + 缓存层。
+</div>
+
+<div class="flow-main">
+<!-- Step 1 -->
+<div class="flow-row">
+<div class="flow-node"><div class="icon">❓</div><div class="label">用户查询</div><div class="desc">原始 query 文本</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+
+<!-- Step 2: Cache check -->
+<div class="flow-row">
+<div class="flow-node new"><div class="icon">💾</div><div class="label">缓存检查</div><div class="desc">queryHash = md5(kbIds + query + topK + threshold)<br>命中 → 直接返回<br>未命中 → 继续流水线</div></div>
+</div>
+<div class="flow-arrow"><div class="arrow-label">未命中</div><div class="line"></div><div class="head"></div></div>
+
+<!-- Step 3: Query rewrite -->
+<div class="flow-row">
+<div class="flow-node new" style="min-width:420px">
+<div class="icon">✏️</div><div class="label">Step 1 · 查询预处理</div>
+<div style="display:flex;gap:16px;margin-top:12px;justify-content:center">
+<div style="background:#f0edff;padding:8px 14px;border-radius:6px;font-size:11px;text-align:center">
+<strong>查询重写</strong><br>
+对话场景下，基于历史消息<br>调用 LLM 改写为独立查询<br>
+<span style="color:#6c5ce7">LlmService.rewriteQuery</span>
+</div>
+<div style="background:#e8edff;padding:8px 14px;border-radius:6px;font-size:11px;text-align:center">
+<strong>查询 Embedding</strong><br>
+调用 EmbeddingService<br>生成查询向量<br>
+<span style="color:#4361ee">text-embedding-v3</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+
+<!-- Step 4: Multi-path retrieval -->
+<div class="flow-row">
+<div class="flow-node active" style="min-width:600px">
+<div class="icon">🔀</div><div class="label">Step 2 · 多路召回（并行执行）</div>
+<div style="display:flex;gap:16px;margin-top:12px;justify-content:center">
+<div style="background:#e8edff;padding:12px 16px;border-radius:8px;font-size:11px;text-align:center;min-width:160px">
+<div style="font-size:20px;margin-bottom:4px">🔮</div>
+<strong>向量检索</strong><br>
+pgvector 余弦相似度<br>
+<code>1 - (embedding <=> query)</code><br>
+召回 topK×3 候选<br>
+<span class="tag tag-blue">权重 0.7</span>
+</div>
+<div style="background:#d4fce8;padding:12px 16px;border-radius:8px;font-size:11px;text-align:center;min-width:160px">
+<div style="font-size:20px;margin-bottom:4px">📝</div>
+<strong>全文检索</strong><br>
+PostgreSQL 中文分词<br>
+<code>ts_rank(tsvector, tsquery)</code><br>
+召回 topK×3 候选<br>
+<span class="tag tag-green">权重 0.3</span>
+</div>
+<div style="background:#ffeaa7;padding:12px 16px;border-radius:8px;font-size:11px;text-align:center;min-width:160px">
+<div style="font-size:20px;margin-bottom:4px">🏷️</div>
+<strong>元数据过滤</strong><br>
+标签 / 文档类型 /<br>时间范围 / 作者<br>
+<code>WHERE ... AND filters</code><br>
+<span class="tag tag-orange">可选条件</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+
+<!-- Step 5: RRF Fusion -->
+<div class="flow-row">
+<div class="flow-node new" style="min-width:480px">
+<div class="icon">🧮</div><div class="label">Step 3 · RRF 融合排序</div>
+<div style="background:#f0edff;padding:10px 16px;border-radius:6px;font-size:11px;margin-top:8px;text-align:left">
+<strong>Reciprocal Rank Fusion 公式：</strong><br>
+<code>score(d) = Σ weight_i / (k + rank_i)</code>&nbsp;&nbsp; k=60<br><br>
+同一文档在两路检索中的排名分数加权合并，解决不同检索方式分数不可比的问题。
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+
+<!-- Step 6: Rerank -->
+<div class="flow-row">
+<div class="flow-node highlight" style="min-width:380px">
+<div class="icon">🎯</div><div class="label">Step 4 · Rerank 重排序 <span class="tag tag-orange">可选</span></div>
+<div style="font-size:11px;color:#636e72;margin-top:8px">
+知识库配置 <code>rerankEnabled=true</code> 时启用<br>
+调用 DashScope <strong>gte-rerank</strong> 模型<br>
+对融合结果做交叉注意力二次排序<br>
+通常可提升 5-15% 的检索准确率
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+
+<!-- Step 7: Trim -->
+<div class="flow-row" style="gap:24px">
+<div class="flow-node"><div class="icon">✂️</div><div class="label">结果裁剪</div><div class="desc">按 topK 截取<br>按 threshold 过滤</div></div>
+<div class="flow-arrow-h"><div class="line"></div><div class="head"></div></div>
+<div class="flow-node new"><div class="icon">💾</div><div class="label">写入缓存</div><div class="desc">TTL = 5 分钟<br>存入 RetrievalCache</div></div>
+<div class="flow-arrow-h"><div class="line"></div><div class="head"></div></div>
+<div class="flow-node done"><div class="icon">📦</div><div class="label">返回结果</div><div class="desc">带分数明细</div></div>
+</div>
+</div>
+</div>
+
+<!-- ========== RRF 示意 ========== -->
+<h2>二、RRF 融合排序示意</h2>
+
+<div class="flow-section">
+<h3>示例：查询 "NestJS 模块化设计"</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:16px;margin-top:12px">
+
+<div style="background:#f8f9fa;border-radius:8px;padding:14px">
+<div style="font-size:13px;font-weight:700;color:#4361ee;margin-bottom:8px">🔮 向量检索排名</div>
+<div style="font-size:12px">
+<div style="padding:4px 0;border-bottom:1px solid #f1f2f6"><strong>#1</strong> NestJS 模块系统详解 <span style="color:#636e72">(0.92)</span></div>
+<div style="padding:4px 0;border-bottom:1px solid #f1f2f6"><strong>#2</strong> 后端架构设计原则 <span style="color:#636e72">(0.87)</span></div>
+<div style="padding:4px 0;border-bottom:1px solid #f1f2f6"><strong>#3</strong> 依赖注入与 IoC 容器 <span style="color:#636e72">(0.84)</span></div>
+<div style="padding:4px 0;border-bottom:1px solid #f1f2f6"><strong>#4</strong> 微服务通信方案 <span style="color:#636e72">(0.79)</span></div>
+<div style="padding:4px 0"><strong>#5</strong> API 网关配置 <span style="color:#636e72">(0.73)</span></div>
+</div>
+</div>
+
+<div style="background:#f8f9fa;border-radius:8px;padding:14px">
+<div style="font-size:13px;font-weight:700;color:#00b894;margin-bottom:8px">📝 全文检索排名</div>
+<div style="font-size:12px">
+<div style="padding:4px 0;border-bottom:1px solid #f1f2f6"><strong>#1</strong> NestJS 快速入门指南 <span style="color:#636e72">(0.95)</span></div>
+<div style="padding:4px 0;border-bottom:1px solid #f1f2f6"><strong>#2</strong> NestJS 模块系统详解 <span style="color:#636e72">(0.88)</span></div>
+<div style="padding:4px 0;border-bottom:1px solid #f1f2f6"><strong>#3</strong> 前端组件化设计 <span style="color:#636e72">(0.72)</span></div>
+<div style="padding:4px 0;border-bottom:1px solid #f1f2f6"><strong>#4</strong> 后端架构设计原则 <span style="color:#636e72">(0.68)</span></div>
+<div style="padding:4px 0"><strong>#5</strong> 模块化 CSS 方案 <span style="color:#636e72">(0.61)</span></div>
+</div>
+</div>
+
+<div style="background:#f0edff;border-radius:8px;padding:14px;border:2px solid #6c5ce7">
+<div style="font-size:13px;font-weight:700;color:#6c5ce7;margin-bottom:8px">🧮 RRF 融合结果</div>
+<div style="font-size:12px">
+<div style="padding:4px 0;border-bottom:1px solid #e0dbff;display:flex;justify-content:space-between">
+<span><strong style="color:#6c5ce7">#1</strong> NestJS 模块系统详解</span>
+<span style="font-weight:700;color:#6c5ce7">0.0331</span>
+</div>
+<div style="padding:4px 0;border-bottom:1px solid #e0dbff;display:flex;justify-content:space-between">
+<span><strong style="color:#6c5ce7">#2</strong> 后端架构设计原则</span>
+<span style="font-weight:700">0.0241</span>
+</div>
+<div style="padding:4px 0;border-bottom:1px solid #e0dbff;display:flex;justify-content:space-between">
+<span><strong style="color:#6c5ce7">#3</strong> NestJS 快速入门指南</span>
+<span style="font-weight:700">0.0164</span>
+</div>
+<div style="padding:4px 0;border-bottom:1px solid #e0dbff;display:flex;justify-content:space-between">
+<span><strong>#4</strong> 依赖注入与 IoC 容器</span>
+<span style="font-weight:700">0.0119</span>
+</div>
+<div style="padding:4px 0;display:flex;justify-content:space-between">
+<span><strong>#5</strong> 微服务通信方案</span>
+<span style="font-weight:700">0.0085</span>
+</div>
+</div>
+<div style="font-size:10px;color:#636e72;margin-top:8px;border-top:1px solid #e0dbff;padding-top:6px">
+"NestJS 模块系统详解" 在两路检索中都排名靠前，RRF 融合后跃升为第 1 名
+</div>
+</div>
+</div>
+</div>
+
+<!-- ========== UI 原型 ========== -->
+<h2>三、UI 界面原型</h2>
+
+<div class="mockup-section">
+<h3>检索测试页 — 增强版（左侧配置 + 元数据过滤）</h3>
+<div class="mockup-container">
+<div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="title">检索测试 · 产品技术文档库</span></div>
+<div class="mockup-body" style="display:grid;grid-template-columns:280px 1fr;gap:20px">
+
+<!-- Left panel -->
+<div>
+<div class="filter-panel">
+<div style="font-size:13px;font-weight:700;margin-bottom:12px">检索配置</div>
+
+<div class="filter-group">
+<div class="filter-label">查询文本</div>
+<textarea style="width:100%;height:64px;border:1px solid #dfe6e9;border-radius:6px;padding:8px;font-size:12px;resize:none" readonly>NestJS 模块化设计最佳实践</textarea>
+</div>
+
+<div class="filter-group">
+<div class="filter-label">检索模式</div>
+<div class="mock-radio-group" style="flex-wrap:wrap">
+<div class="mock-radio active" style="font-size:11px">混合检索</div>
+<div class="mock-radio" style="font-size:11px">向量检索</div>
+<div class="mock-radio" style="font-size:11px">全文检索</div>
+</div>
+</div>
+
+<div class="filter-group">
+<div class="filter-label">Top-K</div>
+<div style="display:flex;align-items:center;gap:8px">
+<input type="range" min="1" max="20" value="5" style="flex:1;accent-color:#4361ee">
+<span style="font-size:12px;font-weight:600;color:#4361ee">5</span>
+</div>
+</div>
+
+<div class="filter-group">
+<div class="filter-label">相似度阈值</div>
+<div style="display:flex;align-items:center;gap:8px">
+<input type="range" min="0" max="100" value="30" style="flex:1;accent-color:#4361ee">
+<span style="font-size:12px;font-weight:600;color:#4361ee">0.30</span>
+</div>
+</div>
+
+<div style="border-top:1px dashed #dfe6e9;margin:12px 0;padding-top:12px">
+<div style="font-size:12px;font-weight:700;color:#6c5ce7;margin-bottom:8px">🏷️ 元数据过滤 <span class="tag tag-purple">新增</span></div>
+</div>
+
+<div class="filter-group">
+<div class="filter-label">文档类型</div>
+<div class="filter-tags">
+<span class="filter-tag active">全部</span>
+<span class="filter-tag">Markdown</span>
+<span class="filter-tag">PDF</span>
+<span class="filter-tag">Word</span>
+</div>
+</div>
+
+<div class="filter-group">
+<div class="filter-label">标签</div>
+<div class="filter-tags">
+<span class="filter-tag active">NestJS</span>
+<span class="filter-tag">架构</span>
+<span class="filter-tag active">后端</span>
+<span class="filter-tag">微服务</span>
+</div>
+</div>
+
+<div class="filter-group">
+<div class="filter-label">时间范围</div>
+<div style="display:flex;gap:4px">
+<input style="flex:1;padding:4px 8px;border:1px solid #dfe6e9;border-radius:4px;font-size:11px" value="2026-01-01" readonly>
+<span style="font-size:11px;line-height:28px">至</span>
+<input style="flex:1;padding:4px 8px;border:1px solid #dfe6e9;border-radius:4px;font-size:11px" value="2026-06-11" readonly>
+</div>
+</div>
+
+<div class="filter-group">
+<div style="display:flex;align-items:center;gap:6px">
+<div style="width:32px;height:18px;background:#4361ee;border-radius:9px;position:relative">
+<div style="width:14px;height:14px;background:#fff;border-radius:50%;position:absolute;top:2px;right:2px"></div>
+</div>
+<span style="font-size:11px;font-weight:600">启用 Rerank</span>
+</div>
+</div>
+
+<button class="mock-btn mock-btn-primary" style="width:100%;margin-top:8px">执行检索</button>
+</div>
+</div>
+
+<!-- Right panel: results -->
+<div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<div style="display:flex;gap:16px;font-size:12px">
+<span>结果: <strong style="color:#4361ee">5</strong></span>
+<span>向量: <strong>12</strong></span>
+<span>全文: <strong>8</strong></span>
+<span>融合后: <strong>15</strong></span>
+<span>耗时: <strong>127ms</strong></span>
+</div>
+<div style="display:flex;gap:8px;align-items:center">
+<span style="font-size:11px;color:#6c5ce7;font-weight:600">🎯 Rerank 已应用</span>
+<span class="tag tag-green">缓存未命中</span>
+</div>
+</div>
+
+<div class="result-card">
+<div class="rc-header">
+<div class="rc-rank top3">1</div>
+<div class="rc-title">NestJS 模块系统详解</div>
+<div class="rc-source">来源: 后端架构文档.md</div>
+</div>
+<div class="rc-scores">
+<span>🔮 向量: <strong style="color:#4361ee">0.92</strong></span>
+<span>📝 全文: <strong style="color:#00b894">0.88</strong></span>
+<span>🧮 RRF: <strong style="color:#6c5ce7">0.0331</strong></span>
+<span>🎯 Rerank: <strong style="color:#e17055">0.96</strong></span>
+</div>
+<div class="rc-content">NestJS 的模块系统是组织代码的核心机制。每个模块通过 @Module() 装饰器定义，包含 controllers、providers、imports 和 exports 四个核心属性……</div>
+</div>
+
+<div class="result-card">
+<div class="rc-header">
+<div class="rc-rank top3">2</div>
+<div class="rc-title">后端架构设计原则</div>
+<div class="rc-source">来源: 技术设计规范.pdf</div>
+</div>
+<div class="rc-scores">
+<span>🔮 向量: <strong style="color:#4361ee">0.87</strong></span>
+<span>📝 全文: <strong style="color:#00b894">0.68</strong></span>
+<span>🧮 RRF: <strong style="color:#6c5ce7">0.0241</strong></span>
+<span>🎯 Rerank: <strong style="color:#e17055">0.91</strong></span>
+</div>
+<div class="rc-content">后端采用分层架构设计，遵循单一职责原则。模块之间通过依赖注入实现松耦合，每个模块负责一个独立的业务领域……</div>
+</div>
+
+<div class="result-card">
+<div class="rc-header">
+<div class="rc-rank top3">3</div>
+<div class="rc-title">NestJS 快速入门指南</div>
+<div class="rc-source">来源: 开发手册.md</div>
+</div>
+<div class="rc-scores">
+<span>🔮 向量: <strong style="color:#4361ee">0.73</strong></span>
+<span>📝 全文: <strong style="color:#00b894">0.95</strong></span>
+<span>🧮 RRF: <strong style="color:#6c5ce7">0.0164</strong></span>
+<span>🎯 Rerank: <strong style="color:#e17055">0.87</strong></span>
+</div>
+<div class="rc-content">快速搭建 NestJS 项目：使用 nest new project-name 命令初始化，默认使用 TypeScript 配置，集成 ESLint 和 Prettier……</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

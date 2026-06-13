@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计图：AI 与 LLM 能力</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#f5f6fa;color:#1a1a2e;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+h1{font-size:28px;font-weight:700;margin-bottom:8px}
+h2{font-size:20px;font-weight:600;margin:32px 0 16px;color:#2d3436;padding-bottom:8px;border-bottom:2px solid #4361ee}
+h3{font-size:16px;font-weight:600;margin:20px 0 12px;color:#2d3436}
+.subtitle{color:#636e72;font-size:14px;margin-bottom:24px}
+.flow-section{background:#fff;border-radius:12px;padding:32px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.flow-main{display:flex;flex-direction:column;align-items:center;gap:0}
+.flow-row{display:flex;align-items:stretch;gap:16px;width:100%;justify-content:center}
+.flow-node{background:#fff;border:2px solid #dfe6e9;border-radius:10px;padding:14px 20px;text-align:center;min-width:140px;transition:all .2s}
+.flow-node:hover{border-color:#4361ee;box-shadow:0 4px 12px rgba(67,97,238,0.15)}
+.flow-node .icon{font-size:24px;margin-bottom:6px}
+.flow-node .label{font-size:13px;font-weight:600;color:#2d3436}
+.flow-node .desc{font-size:11px;color:#636e72;margin-top:4px}
+.flow-node.active{border-color:#4361ee;background:#e8edff}
+.flow-node.new{border-color:#6c5ce7;background:#f0edff}
+.flow-node.done{border-color:#00b894;background:#d4fce8}
+.flow-node.highlight{border-color:#e17055;background:#fff3f0}
+.flow-arrow{display:flex;flex-direction:column;align-items:center;padding:4px 0}
+.flow-arrow .line{width:2px;height:24px;background:#b2bec3}
+.flow-arrow .head{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #b2bec3}
+.flow-arrow .arrow-label{font-size:10px;color:#636e72;margin:2px 0}
+.flow-arrow-h{display:flex;align-items:center;padding:0 4px}
+.flow-arrow-h .line{height:2px;width:32px;background:#b2bec3}
+.flow-arrow-h .head{width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid #b2bec3}
+.annotation{background:#fffbe6;border-left:3px solid #fdcb6e;padding:10px 14px;border-radius:0 6px 6px 0;margin:12px 0;font-size:12px;color:#636e72}
+.annotation strong{color:#2d3436}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.tag-blue{background:#e8edff;color:#4361ee}
+.tag-green{background:#d4fce8;color:#00b894}
+.tag-purple{background:#f0edff;color:#6c5ce7}
+.tag-orange{background:#ffeaa7;color:#e17055}
+.mockup-section{background:#fff;border-radius:12px;padding:24px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.mockup-container{background:#f8f9fa;border:1px solid #dfe6e9;border-radius:8px;overflow:hidden}
+.mockup-header{background:#2d3436;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:8px}
+.mockup-header .dot{width:10px;height:10px;border-radius:50%}
+.mockup-header .dot-red{background:#ff6b6b}
+.mockup-header .dot-yellow{background:#feca57}
+.mockup-header .dot-green{background:#48dbfb}
+.mockup-header .title{font-size:12px;margin-left:12px;opacity:0.8}
+.mockup-body{padding:20px}
+
+/* Provider cards */
+.provider-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.provider-card{background:#fff;border:2px solid #dfe6e9;border-radius:10px;padding:16px;text-align:center;transition:all .2s}
+.provider-card:hover{border-color:#4361ee;box-shadow:0 4px 12px rgba(67,97,238,0.12)}
+.provider-card.active{border-color:#4361ee;background:#e8edff}
+.provider-card .p-logo{font-size:28px;margin-bottom:8px}
+.provider-card .p-name{font-size:14px;font-weight:700;color:#2d3436}
+.provider-card .p-models{font-size:11px;color:#636e72;margin-top:4px}
+.provider-card .p-status{font-size:10px;margin-top:8px;font-weight:600}
+
+/* Prompt template cards */
+.template-list{display:flex;flex-direction:column;gap:8px}
+.template-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #dfe6e9;border-radius:8px;padding:12px 16px;transition:all .15s}
+.template-item:hover{border-color:#4361ee;box-shadow:0 2px 8px rgba(67,97,238,0.08)}
+.template-item.active{border-color:#4361ee;background:#f8faff}
+.template-item .t-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.template-item .t-info{flex:1}
+.template-item .t-name{font-size:13px;font-weight:600}
+.template-item .t-desc{font-size:11px;color:#636e72}
+.template-item .t-code{font-size:10px;color:#b2bec3;font-family:monospace}
+.template-item .t-actions{display:flex;gap:4px}
+.t-btn{padding:4px 10px;border:1px solid #dfe6e9;border-radius:4px;font-size:11px;background:#fff;cursor:pointer}
+.t-btn:hover{border-color:#4361ee;color:#4361ee}
+.t-btn.primary{background:#4361ee;color:#fff;border-color:#4361ee}
+
+/* Chat mockup */
+.chat-container{max-width:480px;margin:0 auto}
+.chat-msg{display:flex;gap:10px;margin:12px 0}
+.chat-msg.user{flex-direction:row-reverse}
+.chat-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.chat-avatar.ai{background:#e8edff;color:#4361ee}
+.chat-avatar.human{background:#d4fce8;color:#00b894}
+.chat-bubble{max-width:340px;padding:10px 14px;border-radius:12px;font-size:12px;line-height:1.6}
+.chat-msg.user .chat-bubble{background:#4361ee;color:#fff;border-bottom-right-radius:4px}
+.chat-msg.assistant .chat-bubble{background:#fff;border:1px solid #dfe6e9;border-bottom-left-radius:4px}
+.chat-meta{display:flex;gap:8px;margin-top:6px;font-size:10px;color:#b2bec3}
+.chat-meta .meta-item{display:flex;align-items:center;gap:3px}
+.chat-citations{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.citation-tag{font-size:10px;padding:2px 8px;background:#f0edff;color:#6c5ce7;border-radius:10px;cursor:pointer}
+
+/* Stats card */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat-card{background:#fff;border:1px solid #dfe6e9;border-radius:8px;padding:14px;text-align:center}
+.stat-card .stat-value{font-size:24px;font-weight:700;color:#4361ee}
+.stat-card .stat-label{font-size:11px;color:#636e72;margin-top:2px}
+.stat-card .stat-change{font-size:10px;margin-top:4px}
+.stat-card .stat-change.up{color:#00b894}
+.stat-card .stat-change.down{color:#d63031}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🤖 AI 与 LLM 能力 — 设计图</h1>
+<p class="subtitle">知源知识库 · 模块三 · 多模型切换 / Prompt 管理 / 自动摘要 / 质量评估</p>
+
+<!-- ========== 模型路由 ========== -->
+<h2>一、多模型动态路由</h2>
+
+<div class="flow-section">
+<div class="annotation">
+<strong>当前问题：</strong>LlmService 和 EmbeddingService 硬编码 DashScope API Key，KnowledgeBase 的 llmProviderId/embeddingModelId 字段未读取。改造后通过 ModelProviderService 统一调度。
+</div>
+
+<div class="flow-main">
+<div class="flow-row">
+<div class="flow-node"><div class="icon">💬</div><div class="label">请求入口</div><div class="desc">对话 / 摘要 / 标签 / 查询重写</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node new" style="min-width:460px">
+<div class="icon">🔀</div><div class="label">ModelProviderService 路由</div>
+<div style="display:flex;gap:12px;margin-top:12px;justify-content:center">
+<div style="background:#f0edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center">
+<strong>1. 查 KB 配置</strong><br>kb.llmProviderId
+</div>
+<div style="background:#e8edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center">
+<strong>2. 查默认模型</strong><br>LlmProvider.isDefault
+</div>
+<div style="background:#ffeaa7;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center">
+<strong>3. 环境变量兜底</strong><br>DASHSCOPE_API_KEY
+</div>
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node new" style="min-width:500px">
+<div class="icon">📋</div><div class="label">任务路由（按 task 选择模型规格）</div>
+<div style="display:flex;gap:12px;margin-top:12px;justify-content:center">
+<div style="background:#d4fce8;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center">
+<strong>chat</strong><br>→ 大模型<br>qwen-plus
+</div>
+<div style="background:#e8edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center">
+<strong>summary</strong><br>→ 大模型<br>qwen-plus
+</div>
+<div style="background:#ffeaa7;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center">
+<strong>tag_extract</strong><br>→ 轻量模型<br>qwen-turbo
+</div>
+<div style="background:#f0edff;padding:8px 12px;border-radius:6px;font-size:11px;text-align:center">
+<strong>query_rewrite</strong><br>→ 轻量模型<br>qwen-turbo
+</div>
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row" style="gap:24px">
+<div class="flow-node active"><div class="icon">☁️</div><div class="label">DashScope</div><div class="desc">qwen-plus / turbo</div></div>
+<div class="flow-node"><div class="icon">🔵</div><div class="label">OpenAI</div><div class="desc">gpt-4o / mini</div></div>
+<div class="flow-node"><div class="icon">🟠</div><div class="label">Anthropic</div><div class="desc">claude-3</div></div>
+</div>
+</div>
+
+<div style="margin-top:16px">
+<h3>支持的模型提供商</h3>
+<div class="provider-grid">
+<div class="provider-card active">
+<div class="p-logo">☁️</div>
+<div class="p-name">阿里云 DashScope</div>
+<div class="p-models">qwen-plus · qwen-max · qwen-turbo<br>text-embedding-v3</div>
+<div class="p-status" style="color:#00b894">● 已连接（默认）</div>
+</div>
+<div class="provider-card">
+<div class="p-logo">🔵</div>
+<div class="p-name">OpenAI</div>
+<div class="p-models">gpt-4o · gpt-4o-mini<br>text-embedding-3-small</div>
+<div class="p-status" style="color:#636e72">○ 可配置</div>
+</div>
+<div class="provider-card">
+<div class="p-logo">🟠</div>
+<div class="p-name">Anthropic</div>
+<div class="p-models">claude-3-opus · claude-3-haiku</div>
+<div class="p-status" style="color:#636e72">○ 可配置</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ========== Prompt 模板 ========== -->
+<h2>二、Prompt 模板管理流程</h2>
+
+<div class="flow-section">
+<div class="flow-main">
+<div class="flow-row">
+<div class="flow-node"><div class="icon">💬</div><div class="label">用户提问</div></div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node new" style="min-width:400px">
+<div class="icon">📋</div><div class="label">PromptTemplateService 模板选择</div>
+<div style="display:flex;gap:8px;margin-top:8px;justify-content:center;font-size:11px">
+<div style="background:#f0edff;padding:6px 10px;border-radius:4px">kb.promptTemplateId → 指定模板</div>
+<div style="background:#e8edff;padding:6px 10px;border-radius:4px">kb.answerStyle → chat_{style}</div>
+<div style="background:#ffeaa7;padding:6px 10px;border-radius:4px">fallback → chat_default</div>
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node active" style="min-width:380px">
+<div class="icon">🔧</div><div class="label">模板渲染</div>
+<div style="font-size:11px;color:#636e72;margin-top:8px">
+替换 <code>{{context}}</code> → 检索到的文档片段<br>
+替换 <code>{{kbName}}</code> 等自定义变量<br>
+无占位符时自动追加上下文
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node done"><div class="icon">📨</div><div class="label">组装 messages 发给 LLM</div><div class="desc">system + history + user</div></div>
+</div>
+</div>
+</div>
+
+<!-- ========== 自动摘要 ========== -->
+<h2>三、文档自动摘要 & AI 打标签</h2>
+
+<div class="flow-section">
+<div class="flow-main">
+<div class="flow-row">
+<div class="flow-node done"><div class="icon">✅</div><div class="label">文档 COMPLETED</div><div class="desc">embedding 入库完成</div></div>
+</div>
+<div class="flow-arrow"><div class="arrow-label">异步触发（不阻塞主流程）</div><div class="line"></div><div class="head"></div></div>
+<div class="flow-row" style="gap:24px">
+<div class="flow-node new">
+<div class="icon">📝</div><div class="label">自动摘要</div>
+<div style="font-size:11px;color:#636e72;margin-top:6px">
+取前 4000 字符<br>
+使用 <code>summary</code> 模板<br>
+轻量模型生成<br>
+→ 存入 Document.summary
+</div>
+</div>
+<div class="flow-node new">
+<div class="icon">🏷️</div><div class="label">AI 打标签</div>
+<div style="font-size:11px;color:#636e72;margin-top:6px">
+取前 4000 字符<br>
+使用 <code>tag_extract</code> 模板<br>
+提取 3-8 个关键词<br>
+→ 写入 Tag + DocTag 表
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node"><div class="icon">⚠️</div><div class="label">失败静默</div><div class="desc">摘要/标签失败不影响文档状态<br>console.warn 记录日志</div></div>
+</div>
+</div>
+</div>
+
+<!-- ========== 质量评估 ========== -->
+<h2>四、回答质量评估流水线</h2>
+
+<div class="flow-section">
+<div class="flow-main">
+<div class="flow-row">
+<div class="flow-node done"><div class="icon">💬</div><div class="label">AI 回答已保存</div></div>
+</div>
+<div class="flow-arrow"><div class="arrow-label">异步入队（Bull Queue）</div><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node new" style="min-width:440px">
+<div class="icon">⚖️</div><div class="label">QualityEvalService 评估</div>
+<div style="display:flex;gap:12px;margin-top:8px;justify-content:center;font-size:11px">
+<div style="background:#d4fce8;padding:8px 12px;border-radius:6px;text-align:center">
+<strong>忠实度 faithfulness</strong><br>回答是否基于上下文<br>有无编造信息
+</div>
+<div style="background:#e8edff;padding:8px 12px;border-radius:6px;text-align:center">
+<strong>相关性 relevance</strong><br>回答是否切题<br>是否回答了用户问题
+</div>
+</div>
+<div style="font-size:11px;color:#6c5ce7;margin-top:8px">
+综合分 = faithfulness × 0.6 + relevance × 0.4
+</div>
+</div>
+</div>
+<div class="flow-arrow"><div class="line"></div><div class="head"></div></div>
+<div class="flow-row">
+<div class="flow-node"><div class="icon">💾</div><div class="label">写入 Message.qualityScore</div><div class="desc">用于后续分析和优化</div></div>
+</div>
+</div>
+</div>
+
+<!-- ========== UI ========== -->
+<h2>五、UI 界面原型</h2>
+
+<div class="mockup-section">
+<h3>Prompt 模板管理（系统设置页新增标签页）</h3>
+<div class="mockup-container">
+<div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="title">系统设置 · Prompt 模板管理</span></div>
+<div class="mockup-body">
+<div style="display:flex;gap:8px;margin-bottom:16px">
+<div style="padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;background:#e8edff;color:#4361ee;cursor:pointer">全部</div>
+<div style="padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;color:#636e72">对话</div>
+<div style="padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;color:#636e72">摘要</div>
+<div style="padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;color:#636e72">标签</div>
+<div style="padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;color:#636e72">查询重写</div>
+<div style="margin-left:auto"><button class="t-btn primary">+ 新建模板</button></div>
+</div>
+
+<div class="template-list">
+<div class="template-item active">
+<div class="t-icon" style="background:#e8edff">💬</div>
+<div class="t-info">
+<div class="t-name">默认问答 <span class="tag tag-green">默认</span></div>
+<div class="t-desc">通用知识库问答场景，要求标注引用编号，使用 Markdown 格式</div>
+<div class="t-code">code: chat_default</div>
+</div>
+<div class="t-actions"><button class="t-btn">编辑</button><button class="t-btn">复制</button></div>
+</div>
+
+<div class="template-item">
+<div class="t-icon" style="background:#d4fce8">⚡</div>
+<div class="t-info">
+<div class="t-name">简洁风格</div>
+<div class="t-desc">最少文字回答，直接给出关键信息</div>
+<div class="t-code">code: chat_concise</div>
+</div>
+<div class="t-actions"><button class="t-btn">编辑</button><button class="t-btn">复制</button></div>
+</div>
+
+<div class="template-item">
+<div class="t-icon" style="background:#f0edff">📖</div>
+<div class="t-info">
+<div class="t-name">详细风格</div>
+<div class="t-desc">全面详尽的回答，包含背景说明、详细解释和示例</div>
+<div class="t-code">code: chat_detailed</div>
+</div>
+<div class="t-actions"><button class="t-btn">编辑</button><button class="t-btn">复制</button></div>
+</div>
+
+<div class="template-item">
+<div class="t-icon" style="background:#ffeaa7">🔧</div>
+<div class="t-info">
+<div class="t-name">技术风格</div>
+<div class="t-desc">注重技术准确性，使用专业术语，提供代码示例</div>
+<div class="t-code">code: chat_technical</div>
+</div>
+<div class="t-actions"><button class="t-btn">编辑</button><button class="t-btn">复制</button></div>
+</div>
+
+<div class="template-item">
+<div class="t-icon" style="background:#fff3f0">📝</div>
+<div class="t-info">
+<div class="t-name">文档摘要 <span class="tag tag-green">默认</span></div>
+<div class="t-desc">为文档生成 200 字以内的简洁摘要</div>
+<div class="t-code">code: summary</div>
+</div>
+<div class="t-actions"><button class="t-btn">编辑</button><button class="t-btn">复制</button></div>
+</div>
+
+<div class="template-item">
+<div class="t-icon" style="background:#e8edff">🏷️</div>
+<div class="t-info">
+<div class="t-name">标签提取 <span class="tag tag-green">默认</span></div>
+<div class="t-desc">从文档中提取 3-8 个关键标签</div>
+<div class="t-code">code: tag_extract</div>
+</div>
+<div class="t-actions"><button class="t-btn">编辑</button><button class="t-btn">复制</button></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mockup-section">
+<h3>对话界面增强 — 模型标识 + Token 统计 + 质量分</h3>
+<div class="mockup-container">
+<div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="title">智能对话 · 产品技术文档库</span></div>
+<div class="mockup-body">
+<div class="chat-container">
+<div class="chat-msg user">
+<div class="chat-avatar human">👤</div>
+<div>
+<div class="chat-bubble">NestJS 模块之间如何共享服务？</div>
+</div>
+</div>
+
+<div class="chat-msg assistant">
+<div class="chat-avatar ai">🤖</div>
+<div>
+<div class="chat-bubble">
+NestJS 中模块间共享服务主要通过<strong>模块导出（exports）</strong>机制实现：<br><br>
+1. 在提供服务的模块中，将 Service 添加到 <code>exports</code> 数组<br>
+2. 在需要使用的模块中，通过 <code>imports</code> 导入该模块<br>
+3. 注入的 Service 默认为<strong>单例</strong>模式，整个应用共享同一实例 [1]<br><br>
+此外，还可以通过<strong>全局模块</strong>（<code>@Global()</code>装饰器）让服务在所有模块中可用，无需逐个导入 [2]。
+</div>
+<div class="chat-meta">
+<span class="meta-item">🤖 qwen-plus</span>
+<span class="meta-item">📊 1,247 tokens</span>
+<span class="meta-item">⏱️ 2.3s</span>
+<span class="meta-item" style="color:#00b894;font-weight:600">⚖️ 质量 0.92</span>
+</div>
+<div class="chat-citations">
+<span class="citation-tag">[1] NestJS 模块系统详解</span>
+<span class="citation-tag">[2] 后端架构设计原则</span>
+</div>
+</div>
+</div>
+</div>
+
+<div style="background:#f8f9fa;border-radius:8px;padding:12px;margin-top:16px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">本次会话统计</div>
+<div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+<div class="stat-card">
+<div class="stat-value" style="font-size:18px">3</div>
+<div class="stat-label">对话轮次</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" style="font-size:18px">4,892</div>
+<div class="stat-label">总 Tokens</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" style="font-size:18px;color:#00b894">0.89</div>
+<div class="stat-label">平均质量分</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" style="font-size:18px">2</div>
+<div class="stat-label">引用文档数</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>
